@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Tester</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --border: #dde1e6; --text: #1d2125; --muted: #6b7380;
+    --accent: #ff6c37; --code-bg: #f3f4f6;
+    --get: #0f9d58; --post: #d98b00; --put: #1a73e8; --patch: #8e44ad; --delete: #d93025;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17191c; --panel: #1f2226; --border: #33373d; --text: #e6e8eb; --muted: #9aa1ab;
+      --code-bg: #26292e;
+      --get: #4cc38a; --post: #f0b440; --put: #6ea8fe; --patch: #c08ae0; --delete: #f2766b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  code, pre, textarea, input.mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 13px; }
+  .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+  aside { background: var(--panel); border-right: 1px solid var(--border); padding: 16px 0; overflow-y: auto; }
+  aside h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 16px 6px; }
+  aside h2:first-child { margin-top: 0; }
+  .item { display: flex; gap: 8px; align-items: center; width: 100%; padding: 6px 16px; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; font: inherit; }
+  .item:hover { background: var(--code-bg); }
+  .item span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .m { font-weight: 700; font-size: 11px; min-width: 48px; }
+  .m-GET { color: var(--get); } .m-POST { color: var(--post); } .m-PUT { color: var(--put); }
+  .m-PATCH { color: var(--patch); } .m-DELETE { color: var(--delete); }
+  main { padding: 20px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .bar { display: flex; gap: 8px; }
+  select, input, textarea, button { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font: inherit; }
+  #method { font-weight: 700; }
+  #url { flex: 1; min-width: 0; }
+  .send { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; padding: 8px 22px; cursor: pointer; }
+  .send:disabled { opacity: .6; cursor: wait; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); padding: 0 8px; }
+  .tab { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; padding: 10px 12px; cursor: pointer; color: var(--muted); }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .pane { padding: 12px; display: none; }
+  .pane.active { display: block; }
+  .kv { display: grid; grid-template-columns: 24px 1fr 1fr 32px; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .kv input[type=text] { width: 100%; min-width: 0; }
+  .ghost { background: none; cursor: pointer; color: var(--muted); }
+  textarea { width: 100%; min-height: 180px; resize: vertical; }
+  .resp-head { display: flex; gap: 16px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .resp-head .muted { color: var(--muted); }
+  .status { font-weight: 700; }
+  .ok { color: var(--get); } .bad { color: var(--delete); } .warn { color: var(--post); }
+  pre { margin: 0; padding: 12px; background: var(--code-bg); border-radius: 6px; overflow: auto; max-height: 55vh; white-space: pre-wrap; word-break: break-word; }
+  .j-key { color: var(--put); } .j-str { color: var(--get); } .j-num { color: var(--post); } .j-lit { color: var(--patch); }
+  .hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+  @media (max-width: 760px) {
+    .app { grid-template-columns: 1fr; }
+    aside { border-right: 0; border-bottom: 1px solid var(--border); max-height: 40vh; }
+    main { padding: 16px; }
+    .bar { flex-wrap: wrap; }
+    #url { flex-basis: 100%; order: 3; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h2>Profiles API</h2>
+    <div id="collection"></div>
+    <h2>History <button class="ghost" id="clearHistory" style="border:0;padding:0 4px;font-size:11px">clear</button></h2>
+    <div id="history"></div>
+  </aside>
+
+  <main>
+    <form class="bar" id="reqForm">
+      <select id="method">
+        <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+      </select>
+      <input id="url" class="mono" type="text" spellcheck="false" placeholder="/profiles">
+      <button class="send" id="send" type="submit">Send</button>
+    </form>
+
+    <section class="card">
+      <div class="tabs" data-group="req">
+        <button class="tab active" data-pane="params">Params</button>
+        <button class="tab" data-pane="headers">Headers</button>
+        <button class="tab" data-pane="body">Body</button>
+      </div>
+      <div class="pane active" id="params"><div class="rows"></div><button class="ghost add">+ Add param</button></div>
+      <div class="pane" id="headers"><div class="rows"></div><button class="ghost add">+ Add header</button></div>
+      <div class="pane" id="body">
+        <textarea id="bodyText" spellcheck="false" placeholder='{ "name": "..." }'></textarea>
+        <p class="hint">Raw JSON. Sent with <code>Content-Type: application/json</code> for POST, PUT and PATCH.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="resp-head">
+        <strong>Response</strong>
+        <span id="status" class="status muted">—</span>
+        <span id="time" class="muted"></span>
+        <span id="size" class="muted"></span>
+      </div>
+      <div class="tabs" data-group="res">
+        <button class="tab active" data-pane="resBody">Body</button>
+        <button class="tab" data-pane="resHeaders">Headers</button>
+      </div>
+      <div class="pane active" id="resBody"><pre id="out">Send a request to see the response.</pre></div>
+      <div class="pane" id="resHeaders"><pre id="outHeaders"></pre></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const sample = { name: "Jane Doe", email: "jane@example.com", role: "recruit" };
+const collection = [
+  { name: "List profiles",   method: "GET",    url: "/profiles" },
+  { name: "Get profile",     method: "GET",    url: "/profiles/1" },
+  { name: "Create profile",  method: "POST",   url: "/profiles",   body: sample },
+  { name: "Replace profile", method: "PUT",    url: "/profiles/1", body: sample },
+  { name: "Update profile",  method: "PATCH",  url: "/profiles/1", body: { role: "recruiter" } },
+  { name: "Delete profile",  method: "DELETE", url: "/profiles/4" },
+];
+
+const $ = (s) => document.querySelector(s);
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+// Tabs
+document.querySelectorAll(".tabs").forEach((bar) => {
+  bar.addEventListener("click", (e) => {
+    const t = e.target.closest(".tab"); if (!t) return;
+    e.preventDefault();
+    bar.querySelectorAll(".tab").forEach((x) => x.classList.toggle("active", x === t));
+    bar.parentElement.querySelectorAll(":scope > .pane").forEach((p) => p.classList.toggle("active", p.id === t.dataset.pane));
+  });
+});
+
+// Key/value rows (params & headers)
+function addRow(pane, key = "", value = "", on = true) {
+  const row = document.createElement("div");
+  row.className = "kv";
+  row.innerHTML = `<input type="checkbox"><input type="text" class="mono" placeholder="key"><input type="text" class="mono" placeholder="value"><button class="ghost" title="Remove">✕</button>`;
+  const [chk, k, v, del] = row.children;
+  chk.checked = on; k.value = key; v.value = value;
+  del.onclick = (e) => { e.preventDefault(); row.remove(); syncUrlFromParams(); };
+  if (pane.id === "params") [chk, k, v].forEach((el) => el.addEventListener("input", syncUrlFromParams));
+  pane.querySelector(".rows").appendChild(row);
+}
+const rowsOf = (id) => [...document.querySelectorAll(`#${id} .kv`)]
+  .map((r) => ({ on: r.children[0].checked, key: r.children[1].value.trim(), value: r.children[2].value }))
+  .filter((r) => r.on && r.key);
+
+document.querySelectorAll(".add").forEach((b) => b.onclick = (e) => { e.preventDefault(); addRow(b.closest(".pane")); });
+
+// Keep URL query string and Params table in step
+function syncUrlFromParams() {
+  const [path] = $("#url").value.split("?");
+  const qs = new URLSearchParams(rowsOf("params").map((r) => [r.key, r.value])).toString();
+  $("#url").value = qs ? `${path}?${qs}` : path;
+}
+function syncParamsFromUrl() {
+  const pane = $("#params"); pane.querySelector(".rows").innerHTML = "";
+  const q = $("#url").value.split("?")[1];
+  if (q) new URLSearchParams(q).forEach((v, k) => addRow(pane, k, v));
+}
+$("#url").addEventListener("input", syncParamsFromUrl);
+
+function load(req) {
+  $("#method").value = req.method;
+  $("#url").value = req.url;
+  $("#bodyText").value = req.body == null ? "" : typeof req.body === "string" ? req.body : JSON.stringify(req.body, null, 2);
+  $("#headers .rows").innerHTML = "";
+  (req.headers || []).forEach((h) => addRow($("#headers"), h.key, h.value));
+  syncParamsFromUrl();
+  colorMethod();
+}
+const colorMethod = () => { $("#method").className = "m-" + $("#method").value; };
+$("#method").addEventListener("change", colorMethod);
+
+function sidebarItem(req, label) {
+  const b = document.createElement("button");
+  b.className = "item";
+  b.innerHTML = `<span class="m m-${req.method}">${req.method}</span><span></span>`;
+  b.lastChild.textContent = label;
+  b.onclick = () => load(req);
+  return b;
+}
+collection.forEach((r) => $("#collection").appendChild(sidebarItem(r, r.name)));
+
+function renderHistory() {
+  const h = $("#history"); h.innerHTML = "";
+  store.get("apiTester.history", []).forEach((r) => h.appendChild(sidebarItem(r, r.url)));
+}
+$("#clearHistory").onclick = () => { store.set("apiTester.history", []); renderHistory(); };
+
+// JSON pretty-print with highlighting
+const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+function highlight(json) {
+  return esc(json).replace(/("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(\.\d+)?([eE][+-]?\d+)?)/g, (m) => {
+    const cls = /^"/.test(m) ? (/:$/.test(m) ? "j-key" : "j-str") : /true|false|null/.test(m) ? "j-lit" : "j-num";
+    return `<span class="${cls}">${m}</span>`;
+  });
+}
+
+$("#reqForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const method = $("#method").value;
+  const url = $("#url").value.trim();
+  if (!url) return;
+  const headers = Object.fromEntries(rowsOf("headers").map((r) => [r.key, r.value]));
+  const opts = { method, headers };
+  const raw = $("#bodyText").value.trim();
+
+  if (raw && ["POST", "PUT", "PATCH"].includes(method)) {
+    try { JSON.parse(raw); } catch (err) {
+      $("#status").className = "status bad"; $("#status").textContent = "Invalid JSON body";
+      $("#out").textContent = err.message; return;
+    }
+    opts.body = raw;
+    if (!Object.keys(headers).some((k) => k.toLowerCase() === "content-type")) headers["Content-Type"] = "application/json";
+  }
+
+  $("#send").disabled = true;
+  $("#status").className = "status muted"; $("#status").textContent = "Sending…";
+  const t0 = performance.now();
+  try {
+    const res = await fetch(url, opts);
+    const text = await res.text();
+    const ms = Math.round(performance.now() - t0);
+    $("#status").className = "status " + (res.ok ? "ok" : res.status >= 500 ? "bad" : "warn");
+    $("#status").textContent = `${res.status} ${res.statusText}`;
+    $("#time").textContent = `${ms} ms`;
+    $("#size").textContent = `${new Blob([text]).size} B`;
+    let pretty;
+    try { pretty = highlight(JSON.stringify(JSON.parse(text), null, 2)); } catch { pretty = esc(text || "(empty body)"); }
+    $("#out").innerHTML = pretty;
+    $("#outHeaders").textContent = [...res.headers].map(([k, v]) => `${k}: ${v}`).join("\n");
+  } catch (err) {
+    $("#status").className = "status bad"; $("#status").textContent = "Request failed";
+    $("#time").textContent = $("#size").textContent = "";
+    $("#out").textContent = `${err.message}\n\nIs the server running?`;
+  } finally {
+    $("#send").disabled = false;
+  }
+
+  const entry = { method, url, body: raw || null, headers: rowsOf("headers") };
+  const hist = store.get("apiTester.history", []).filter((h) => !(h.method === method && h.url === url));
+  store.set("apiTester.history", [entry, ...hist].slice(0, 20));
+  renderHistory();
+});
+
+// Ctrl/Cmd+Enter sends from anywhere
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") $("#reqForm").requestSubmit();
+});
+
+renderHistory();
+load(collection[0]);
+</script>
+</body>
+</html>

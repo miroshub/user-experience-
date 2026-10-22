@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
-app.listen(port,()=> {
-console.log("server is live");
+app.use(express.json());
+app.use(express.static("public"));
+app.use(require("./routes/profileRoutes"));
 
-
-})
+app.listen(port, () => console.log(`server is live on http://localhost:${port}`));
