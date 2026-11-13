@@ -7,6 +7,9 @@ function listProfiles(query) {
     if (!Number.isInteger(page) || page < 1) return "invalid";
     if (!Number.isInteger(limit) || limit < 1) return "invalid";
 
+    // ?role=a&role=b arrives as an array, so only accept plain strings
+    if (query.role !== undefined && typeof query.role !== "string") return "invalid";
+    if (query.search !== undefined && typeof query.search !== "string") return "invalid";
     const role = query.role ? query.role.trim().toLowerCase() : "";
     const search = query.search ? query.search.trim().toLowerCase() : "";
     const all = repo.findAll(role, search);

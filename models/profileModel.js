@@ -10,8 +10,15 @@ function validateId(id) {
     return Number.isInteger(n) && n > 0;
 }
 
+// Body must be a plain JSON object. It is undefined when the request had no body
+// or wasn't sent as Content-Type: application/json (Express 5 leaves req.body undefined).
+function isObject(data) {
+    return data !== null && typeof data === "object" && !Array.isArray(data);
+}
+
 // Full profile: every field required
 function validateProfile(data) {
+    if (!isObject(data)) return false;
     for (const f of fields) {
         if (!isText(data[f])) return false;
     }
@@ -20,6 +27,7 @@ function validateProfile(data) {
 
 // Partial profile: at least one field, and only known fields
 function validateProfilePatch(data) {
+    if (!isObject(data)) return false;
     const keys = Object.keys(data);
     if (keys.length === 0) return false;
     for (const k of keys) {
