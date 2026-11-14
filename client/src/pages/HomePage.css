@@ -1,0 +1,30 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 720px;
+  padding: 56px 16px;
+  margin: 0 auto;
+}
+
+.home-page__logo {
+  margin-bottom: 32px;
+  color: var(--brand-primary);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.home-page h1 {
+  font-size: 32px;
+  line-height: 38px;
+}
+
+.home-page__meta,
+.home-page__soon {
+  color: var(--text-secondary);
+}
+
+.home-page__soon {
+  margin-bottom: 12px;
+}

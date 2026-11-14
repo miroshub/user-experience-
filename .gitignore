@@ -12,3 +12,5 @@ DECISIONS.md/
 *.env
 !.env.example
 atlas-credentials.env
+
+.playwright-mcp/

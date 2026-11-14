@@ -1,0 +1,140 @@
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.auth-layout__form {
+  display: flex;
+  flex: 1 1 50%;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 56px 96px;
+}
+
+.auth-layout__logo {
+  color: var(--brand-primary);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
+.auth-layout__panel {
+  display: flex;
+  flex: 1 1 50%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: var(--brand-primary);
+}
+
+.preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 380px;
+  padding: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-panel);
+}
+
+.preview-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-card__logo {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--text-primary);
+  border-radius: var(--radius-control);
+  color: var(--text-on-brand);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.preview-card__company {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.preview-card__name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.preview-card__reply,
+.preview-card__meta {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.preview-card__fit {
+  padding: 6px 10px;
+  background: var(--brand-tint);
+  border-radius: 8px;
+  color: var(--brand-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.preview-card__title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
+.preview-card__chips {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-layout__steps {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auth-layout__steps li {
+  padding: 8px 14px;
+  border: 1px solid var(--brand-tint);
+  border-radius: var(--radius-pill);
+  color: var(--text-on-brand);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.auth-layout__caption {
+  color: var(--brand-tint);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* NFR-11: on tablets and phones the green panel steps aside so the form gets the space */
+@media (max-width: 960px) {
+  .auth-layout__panel {
+    display: none;
+  }
+
+  .auth-layout__form {
+    padding: 32px 16px;
+  }
+}

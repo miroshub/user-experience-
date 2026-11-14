@@ -1,0 +1,60 @@
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+}
+
+.role-option--checked {
+  background: var(--brand-tint);
+  border-color: var(--brand-primary);
+}
+
+.role-option:has(input:focus-visible) {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.role-option__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--bg-sunken);
+  border-radius: var(--radius-control);
+}
+
+.role-option--checked .role-option__icon {
+  background: var(--brand-primary);
+}
+
+.role-option__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.role-option__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.role-option__description {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.role-option__radio {
+  flex-shrink: 0;
+}

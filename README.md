@@ -9,7 +9,8 @@ Node.js + Express REST API, MongoDB Atlas (Mongoose), with a React front end in 
 2. Copy `.env.example` to `.env` and fill in `MONGODB_URI` and `JWT_SECRET`
 3. In MongoDB Atlas, allow your IP (Security > Network Access)
 4. Optional demo data: `npm run seed` (add `-- --bulk` for 1,000 extra seekers). Every demo account uses the password `Password123!`
-5. Start: `npm run dev`, then open http://localhost:3000 (a browser API tester)
+5. Start the API: `npm run dev` (http://localhost:3000 shows a browser API tester)
+6. In a second terminal, start the React app: `cd client`, `npm install` (first time only), `npm run dev`, then open http://localhost:5173
 
 | Command | What it does |
 |---|---|

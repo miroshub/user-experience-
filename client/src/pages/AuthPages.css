@@ -1,0 +1,135 @@
+/* Shared by H1 Welcome, Sign up and Log in */
+.auth-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: 528px;
+}
+
+.auth-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 96px 0 40px;
+}
+
+.auth-page__intro--form {
+  gap: 8px;
+  margin: 64px 0 32px;
+}
+
+.auth-page__display {
+  max-width: 520px;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 46px;
+  letter-spacing: -1px;
+}
+
+.auth-page__heading {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.5px;
+}
+
+.auth-page__lead {
+  max-width: 480px;
+  color: var(--text-secondary);
+}
+
+.auth-page__overline {
+  margin-bottom: 12px;
+  padding: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.6px;
+}
+
+.auth-page__roles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.auth-page__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-page__spacer {
+  flex: 1;
+  min-height: 32px;
+}
+
+.auth-page__note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.auth-page__switch {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.auth-page__switch a,
+.auth-page__back {
+  color: var(--brand-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-page__switch a:hover,
+.auth-page__back:hover {
+  text-decoration: underline;
+}
+
+.auth-page__back {
+  align-self: flex-start;
+  margin-top: 32px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.auth-page__error {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: #fdecea;
+  border: 1px solid #f3c1bb;
+  border-radius: var(--radius-control);
+  color: var(--text-error);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+@media (max-width: 960px) {
+  .auth-page__intro {
+    margin: 48px 0 32px;
+  }
+
+  .auth-page__display {
+    font-size: 32px;
+    line-height: 38px;
+  }
+
+  .auth-page__note {
+    align-items: flex-start;
+  }
+}

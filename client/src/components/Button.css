@@ -1,0 +1,46 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.button--md {
+  height: 44px;
+}
+
+.button--lg {
+  height: 52px;
+}
+
+.button--full {
+  width: 100%;
+}
+
+.button--primary {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+}
+
+.button--secondary {
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--brand-primary);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

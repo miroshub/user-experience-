@@ -1,0 +1,23 @@
+/* Design tokens, copied from the Figma variables (page 07 · Design system) */
+:root {
+  --bg-canvas: #f6f4ef;
+  --bg-surface: #ffffff;
+  --bg-sunken: #eeebe3;
+  --border-default: #e2ddd2;
+
+  --brand-primary: #0b5d45;
+  --brand-tint: #e2efe8;
+
+  --text-primary: #14201b;
+  --text-secondary: #4a5a53;
+  --text-on-brand: #ffffff;
+  --text-error: #b42318;
+
+  --radius-control: 10px;
+  --radius-card: 12px;
+  --radius-panel: 14px;
+  --radius-pill: 999px;
+
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
