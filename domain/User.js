@@ -17,6 +17,7 @@ class User {
     #role;
     #isVerified;
     #accountState;
+    #createdAt;
 
     constructor(data) {
         this.#userId = data.userId || null;
@@ -26,7 +27,11 @@ class User {
         this.#role = data.role;
         this.#isVerified = data.isVerified === true;
         this.#accountState = data.accountState || "active";
+        this.#createdAt = data.createdAt ? new Date(data.createdAt) : null;
     }
+
+    // not in the class diagram: the spam rule "account less than 1 day old" (FR-18) needs it
+    getCreatedAt() { return this.#createdAt; }
 
     getUserId() { return this.#userId; }
     setUserId(value) { this.#userId = value; }

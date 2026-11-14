@@ -19,6 +19,19 @@ class UserRepository {
         return doc ? this.#toDomain(doc) : null;
     }
 
+    async findManyByIds(ids) {
+        const docs = await UserModel.find({ _id: { $in: ids } });
+        return docs.map(doc => this.#toDomain(doc));
+    }
+
+    // Active seekers for a company's candidate cards, skipping the ones already swiped on
+    async findSeekers({ excludeIds = [] }, limit) {
+        const docs = await SeekerModel.find({ _id: { $nin: excludeIds }, accountState: "active" })
+            .sort({ createdAt: -1 })
+            .limit(limit);
+        return docs.map(doc => this.#toDomain(doc));
+    }
+
     // login is an email or a phone number. Returns the hash too, for AuthService only.
     async findByLogin(login) {
         const value = login.trim();

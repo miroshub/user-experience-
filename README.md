@@ -60,5 +60,16 @@ Protected routes need the header `Authorization: Bearer <token>`.
 | POST | `/api/users/me/verify` | logged in | One-time ID upload (form field `idDocument`), sets the Verified badge |
 | POST | `/api/users/me/logo` | company | Company logo (form field `logo`) |
 | GET | `/api/files/:id` | logged in | Public files, or your own private ones |
+| POST | `/api/jobs` | company | Post a job: `{ title, salaryMin, salaryMax, workMode, city, skills, description }` |
+| GET | `/api/jobs/mine` | company | Own jobs, newest first |
+| GET | `/api/jobs/:id` | logged in | One job (paused or closed ones only for their company) |
+| PATCH | `/api/jobs/:id` | company | Edit any field of an own job |
+| POST | `/api/jobs/:id/pause`, `/resume`, `/close` | company | Change the job status |
+| POST | `/api/jobs/:id/image` | company | Job image (form field `image`) |
+| GET | `/api/feed/jobs` | seeker | Next job cards with % fit. Filters: `role`, `city`, `workMode`, `minSalary`, `limit` |
+| GET | `/api/feed/candidates?jobId=` | company | Candidate cards for a job, plus a "Check later" list |
+| POST | `/api/swipes` | seeker, company | `{ jobId, interested }` (company also sends `seekerId`). Returns the match if both said yes |
+| POST | `/api/swipes/undo` | seeker | Take back the last swipe, unless it made a match |
+| GET | `/api/matches` | logged in | Own matches, with the job and the other person |
 
 See `CODE_WALKTHROUGH.md` for a request traced through every layer.

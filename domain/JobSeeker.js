@@ -1,4 +1,5 @@
 const User = require("./User");
+const Swipe = require("./Swipe");
 const AppError = require("../errors/AppError");
 
 class JobSeeker extends User {
@@ -45,6 +46,17 @@ class JobSeeker extends User {
 
     getEditableFields() {
         return [...super.getEditableFields(), "headline", "city", "skills"];
+    }
+
+    // The pure part of a swipe: make the Swipe. SwipeService saves it and checks for a match.
+    swipeOnJob(job, choice) {
+        if (!job.isLive()) throw new AppError("This job is no longer open", 409);
+        return new Swipe({
+            seekerId: this.getUserId(),
+            jobId: job.getJobId(),
+            swipedBy: "seeker",
+            isInterested: choice === true
+        });
     }
 
     applyProfileChanges(changes) {

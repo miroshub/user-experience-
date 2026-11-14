@@ -12,7 +12,7 @@ export default defineConfig({
             provider: "v8",
             reporter: ["text", "html"],
             // NFR-10: the logic files must stay at 80% or more, or `npm run coverage` fails
-            include: ["domain/**/*.js", "services/**/*.js", "security/**/*.js"],
+            include: ["domain/**/*.js", "services/**/*.js", "security/**/*.js", "rules/**/*.js"],
             thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 }
         }
     }

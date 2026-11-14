@@ -2,6 +2,8 @@
 const { buildContainer } = require("../container");
 const UserFactory = require("../domain/UserFactory");
 const { UserModel } = require("../models/UserModel");
+const JobModel = require("../models/JobModel");
+const SwipeModel = require("../models/SwipeModel");
 
 const DEMO_PASSWORD = "Password123!";
 
@@ -28,6 +30,39 @@ async function seedPeople(container) {
         await container.userRepository.create(user, hash);
         console.log(`  added ${person.role.padEnd(7)} ${login}`);
     }
+}
+
+const jobs = [
+    { company: "hr@niletech.test", title: "Junior Frontend Developer", salaryMin: 14000, salaryMax: 18000, workMode: "hybrid", city: "Maadi", skills: ["React", "JavaScript", "CSS"], description: "Build the screens of our booking app with a small, friendly team." },
+    { company: "hr@niletech.test", title: "Node.js Backend Intern", salaryMin: 8000, salaryMax: 10000, workMode: "remote", city: "", skills: ["Node", "Express", "MongoDB"], description: "Six-month paid internship on our REST API." },
+    { company: "hr@niletech.test", title: "UI Designer", salaryMin: 12000, salaryMax: 16000, workMode: "onsite", city: "Cairo", skills: ["Figma", "UX"], description: "Own the design system and the mobile screens." },
+    { company: "jobs@deltabank.test", title: "React Developer", salaryMin: 20000, salaryMax: 26000, workMode: "hybrid", city: "Alexandria", skills: ["React", "TypeScript"], description: "Work on the online banking front end." },
+    { company: "jobs@deltabank.test", title: "Data Analyst", salaryMin: 15000, salaryMax: 19000, workMode: "onsite", city: "Alexandria", skills: ["SQL", "Python", "Excel"], description: "Turn transaction data into weekly reports." },
+    { company: "jobs@deltabank.test", title: "QA Tester", salaryMin: 10000, salaryMax: 13000, workMode: "remote", city: "", skills: ["Testing", "JavaScript"], description: "Write and run test plans for every release." }
+];
+
+async function seedJobs() {
+    for (const job of jobs) {
+        const company = await UserModel.findOne({ email: job.company });
+        const exists = await JobModel.exists({ company: company._id, title: job.title });
+        if (exists) {
+            console.log(`  skip  job "${job.title}" (already there)`);
+            continue;
+        }
+        await JobModel.create({ ...job, company: company._id, status: "live" });
+        console.log(`  added job "${job.title}"`);
+    }
+
+    // Demo shortcut: Nile Tech already said Interested to Salma, so her first yes on this job is a match
+    const nile = await UserModel.findOne({ email: "hr@niletech.test" });
+    const salma = await UserModel.findOne({ email: "salma@wuzzufny.test" });
+    const frontend = await JobModel.findOne({ company: nile._id, title: "Junior Frontend Developer" });
+    await SwipeModel.updateOne(
+        { swipedBy: "company", seeker: salma._id, job: frontend._id },
+        { $setOnInsert: { isInterested: true, swipedAt: new Date() } },
+        { upsert: true }
+    );
+    console.log("  Nile Tech is already interested in Salma for Junior Frontend Developer");
 }
 
 // NFR-09: 1,000 fake seekers, inserted in one go so it takes seconds, not minutes
@@ -58,6 +93,7 @@ async function main() {
 
     console.log("Seeding demo accounts (password for all: " + DEMO_PASSWORD + ")");
     await seedPeople(container);
+    await seedJobs();
     if (process.argv.includes("--bulk")) await seedBulk(container);
 
     await container.database.disconnect();

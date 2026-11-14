@@ -1,4 +1,6 @@
 const User = require("./User");
+const Job = require("./Job");
+const Swipe = require("./Swipe");
 const AppError = require("../errors/AppError");
 
 const SIZES = ["1-10", "11-50", "51-200", "201-1000", "1000+"];
@@ -66,6 +68,36 @@ class Company extends User {
 
     getEditableFields() {
         return [...super.getEditableFields(), "companyName", "industry", "location", "size", "about"];
+    }
+
+    // FR-30: the pure part of posting a job. JobService saves it.
+    postJob(data) {
+        const job = new Job({
+            companyId: this.getUserId(),
+            title: data.title,
+            salaryMin: data.salaryMin,
+            salaryMax: data.salaryMax,
+            workMode: data.workMode,
+            city: data.city,
+            skills: data.skills,
+            status: "live"
+        });
+        if (data.description !== undefined) job.setDescription(data.description);
+        job.validate();
+        return job;
+    }
+
+    // Class diagram: swipeOnSeeker(seeker, choice). The job is needed too: a company swipes per job.
+    swipeOnSeeker(seeker, choice, job) {
+        if (!job.belongsTo(this.getUserId())) throw new AppError("Job not found", 404);
+        if (!job.isLive()) throw new AppError("This job is not live", 409);
+        if (seeker.getRole() !== "seeker") throw new AppError("Candidate not found", 404);
+        return new Swipe({
+            seekerId: seeker.getUserId(),
+            jobId: job.getJobId(),
+            swipedBy: "company",
+            isInterested: choice === true
+        });
     }
 
     applyProfileChanges(changes) {
