@@ -1,19 +1,26 @@
-const express = require("express");
-const app = express();
+const { buildContainer } = require("./container");
+const createApp = require("./app");
+
+// Node 20.12+ reads .env by itself, so no dotenv package is needed
+try {
+    process.loadEnvFile();
+} catch {
+    console.error("No .env file found. Copy .env.example to .env and fill it in.");
+    process.exit(1);
+}
+
 const port = process.env.PORT || 3000;
 
-app.use(express.json());
-app.use(express.static("public"));
-app.get("/", (req, res) => res.redirect("/api-tester.html"));
-app.use(require("./routes/profileRoutes"));
+async function start() {
+    const container = buildContainer();
+    await container.database.connect();
 
-// Errors come back as JSON instead of Express's HTML stack-trace page
-app.use((err, req, res, next) => {
-    if (err.type === "entity.parse.failed") {
-        return res.status(400).json({ message: "Invalid JSON" });
-    }
-    console.error(err);
-    res.status(500).json({ message: "Something went wrong" });
+    const app = createApp(container);
+    app.listen(port, () => console.log(`server is live on http://localhost:${port}`));
+}
+
+start().catch(err => {
+    // only the message: a full error object could include connection details
+    console.error("Server could not start:", err.message);
+    process.exit(1);
 });
-
-app.listen(port, () => console.log(`server is live on http://localhost:${port}`));
