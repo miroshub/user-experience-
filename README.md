@@ -1,58 +1,63 @@
-# Profiles CRUD API (MVC + Layered Architecture)
+# Wuzzufny
 
-Run: `node server.js` → http://localhost:3000 (a browser API tester is served at `/api-tester.html`).
+A two-way "swipe to match" job app: seekers swipe on jobs, companies swipe on candidates, and a match opens a chat.
+Node.js + Express REST API, MongoDB Atlas (Mongoose), with a React front end in `client/`.
+
+## Run it
+
+1. Install packages: `npm install`
+2. Copy `.env.example` to `.env` and fill in `MONGODB_URI` and `JWT_SECRET`
+3. In MongoDB Atlas, allow your IP (Security > Network Access)
+4. Optional demo data: `npm run seed` (add `-- --bulk` for 1,000 extra seekers). Every demo account uses the password `Password123!`
+5. Start: `npm run dev`, then open http://localhost:3000 (a browser API tester)
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Server with auto-restart on file changes |
+| `npm start` | Server without auto-restart |
+| `npm test` | All tests, on an in-memory MongoDB (real data is never touched) |
+| `npm run coverage` | Tests plus coverage; fails if logic files drop below 80% |
+| `npm run seed` | Demo accounts: 2 admins, 2 companies, 3 seekers |
 
 ## Architecture
-The API combines **MVC** (Model, View, Controller) with a **layered architecture** (Service and Repository layers).
-Each module has one responsibility, and each layer only talks to the layer directly below it.
 
-| Module | Layer | Responsibility |
+MVC with two extra layers (Service and Repository), wired together in one place (`container.js`).
+
+```
+request -> routes -> controller -> service -> repository -> Mongoose model -> MongoDB
+                        |              |
+                      view         domain classes (User, JobSeeker, Company, Admin, ...)
+```
+
+| Folder | Layer | Job |
 |---|---|---|
-| `server.js` | Entry point | Creates the Express app, registers middleware and routes, starts the server |
-| `routes/profileRoutes.js` | Routing | Maps each HTTP method + URL to a Controller function |
-| `controllers/profileController.js` | Controller | The only layer that touches `req`/`res`: passes request data to the Service, picks the status code, sends the View output |
-| `services/profileService.js` | Service | Business operations: coordinates validation, pagination, filtering, merging partial updates, and calls the Repository. Knows nothing about HTTP |
-| `repositories/profileRepository.js` | Repository | Owns the in-memory `profiles` array; the only module that reads or changes stored data. Knows nothing about HTTP |
-| `models/profileModel.js` | Model | Defines what a profile is: its fields, validation rules for data and IDs, and normalizing (trimming) input |
-| `views/profileView.js` | View | Formats every JSON response body (`{ data }`, `{ data, pagination }`, `{ message }`) |
+| `routes/` | Routing | Which URL goes to which controller method |
+| `controllers/` | Controller | HTTP only: reads the request, picks the status code |
+| `views/` | View (server) | Shapes every JSON response. React in `client/` is the UI view |
+| `services/` | Service | Business rules. Knows nothing about HTTP |
+| `domain/` | Model (domain) | The classes from the class diagram, with their pure rules |
+| `repositories/` | Repository | The only code that talks to MongoDB. Turns documents into domain objects |
+| `models/` | Model (data) | Mongoose schemas and indexes |
+| `security/` | Security | Password hashing (bcrypt) and login tokens (JWT) |
+| `middleware/` | Middleware | Login check, role check, file uploads, error handling |
+| `config/` | Config | `Database`, the Singleton connection |
+| `container.js` | Composition root | The only file that creates concrete classes (Dependency Inversion) |
 
-Rules that keep the layers separate:
-- Only the Controller uses `req` and `res`.
-- Only the Repository touches the stored data.
-- Only the Model knows the profile's fields and rules.
-- Only the View decides the shape of the response body.
+## API so far
 
-## How a request travels through the app
-```
-Client
-  → server.js            (express.json() parses the body)
-  → profileRoutes        (picks the controller function for METHOD + URL)
-  → profileController    (passes req.params / req.query / req.body to the service)
-  → profileService       (validates with the Model, applies business rules)
-      → profileModel            validate id / data, normalize fields
-      → profileRepository       read or change stored data
-  ← profileService       (returns data, or "invalid" / "not found")
-  ← profileController    (chooses status code: 200/201/204, or 400/404 for errors)
-  → profileView          (shapes the JSON body)
-  → Client
-```
+All responses are JSON: `{ data }` on success, `{ message }` on error.
+Protected routes need the header `Authorization: Bearer <token>`.
 
-Example — `PATCH /profiles/2` with `{ "role": "recruiter" }`:
-1. The route calls `patchProfile` in the Controller.
-2. The Controller calls `profileService.patchProfile("2", { role: "recruiter" })`.
-3. The Service checks the id and the patch with the Model, loads profile 2 from the Repository, merges the change, validates the merged profile, and saves it through `profileRepository.update`.
-4. The Controller passes the saved profile to `profileView.presentProfile` and responds `200` with `{ "data": { ... } }`. Fields that were not sent keep their old values.
-
-## Endpoints
-| Method | URL | Description | Success |
+| Method | URL | Who | What |
 |---|---|---|---|
-| GET | /profiles | List profiles. Optional query: `page`, `limit` (default 1 / 10), `role`, `search` | 200 |
-| GET | /profiles/:id | Get one profile | 200 |
-| POST | /profiles | Create (name, email, role required) | 201 |
-| PUT | /profiles/:id | Replace (all fields required) | 200 |
-| PATCH | /profiles/:id | Partial update (only the fields sent change) | 200 |
-| DELETE | /profiles/:id | Delete | 204 |
+| GET | `/api/health` | anyone | Server and database status |
+| POST | `/api/auth/signup` | anyone | `{ role: "seeker" or "company", fullName, email or phone, password }` |
+| POST | `/api/auth/login` | anyone | `{ login: email or phone, password }` |
+| POST | `/api/auth/logout` | logged in | Ends the session on the client |
+| GET | `/api/users/me` | logged in | Own profile |
+| PATCH | `/api/users/me` | logged in | Edit own profile (seeker: headline, city, skills; company: companyName, industry, location, size, about) |
+| POST | `/api/users/me/verify` | logged in | One-time ID upload (form field `idDocument`), sets the Verified badge |
+| POST | `/api/users/me/logo` | company | Company logo (form field `logo`) |
+| GET | `/api/files/:id` | logged in | Public files, or your own private ones |
 
-Errors: `400` for an invalid id, body or query (`{ "message": "..." }`), `404` when the profile does not exist.
-
-For a line-by-line explanation of every file, see [CODE_WALKTHROUGH.md](CODE_WALKTHROUGH.md).
+See `CODE_WALKTHROUGH.md` for a request traced through every layer.

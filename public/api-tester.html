@@ -66,8 +66,10 @@
 <body>
 <div class="app">
   <aside>
-    <h2>Profiles API</h2>
+    <h2>Wuzzufny API</h2>
     <div id="collection"></div>
+    <h2>Login token</h2>
+    <p class="hint" id="tokenState" style="margin:0 8px 8px">none, log in first</p>
     <h2>History <button class="ghost" id="clearHistory" style="border:0;padding:0 4px;font-size:11px">clear</button></h2>
     <div id="history"></div>
   </aside>
@@ -77,7 +79,7 @@
       <select id="method">
         <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
       </select>
-      <input id="url" class="mono" type="text" spellcheck="false" placeholder="/profiles">
+      <input id="url" class="mono" type="text" spellcheck="false" placeholder="/api/health">
       <button class="send" id="send" type="submit">Send</button>
     </form>
 
@@ -113,15 +115,22 @@
 </div>
 
 <script>
-const sample = { name: "Jane Doe", email: "jane@example.com", role: "recruit" };
 const collection = [
-  { name: "List profiles",   method: "GET",    url: "/profiles" },
-  { name: "Get profile",     method: "GET",    url: "/profiles/1" },
-  { name: "Create profile",  method: "POST",   url: "/profiles",   body: sample },
-  { name: "Replace profile", method: "PUT",    url: "/profiles/1", body: sample },
-  { name: "Update profile",  method: "PATCH",  url: "/profiles/1", body: { role: "recruiter" } },
-  { name: "Delete profile",  method: "DELETE", url: "/profiles/4" },
+  { name: "Health",            method: "GET",   url: "/api/health" },
+  { name: "Sign up (seeker)",  method: "POST",  url: "/api/auth/signup", body: { role: "seeker", fullName: "Salma Ali", email: "salma@example.com", password: "Password123!" } },
+  { name: "Sign up (company)", method: "POST",  url: "/api/auth/signup", body: { role: "company", fullName: "Nile HR", email: "hr@nile.example", password: "Password123!", companyName: "Nile Tech" } },
+  { name: "Log in",            method: "POST",  url: "/api/auth/login",  body: { login: "salma@example.com", password: "Password123!" } },
+  { name: "My profile",        method: "GET",   url: "/api/users/me" },
+  { name: "Edit my profile",   method: "PATCH", url: "/api/users/me", body: { city: "Cairo", skills: ["React", "Node"] } },
+  { name: "Log out",           method: "POST",  url: "/api/auth/logout" },
 ];
+
+// The last token from sign-up or log-in is sent automatically as "Authorization: Bearer ..."
+let token = null;
+function setToken(value) {
+  token = value;
+  document.getElementById("tokenState").textContent = token ? "saved, sent with every request" : "none, log in first";
+}
 
 const $ = (s) => document.querySelector(s);
 const store = {
@@ -212,6 +221,7 @@ $("#reqForm").addEventListener("submit", async (e) => {
   const url = $("#url").value.trim();
   if (!url) return;
   const headers = Object.fromEntries(rowsOf("headers").map((r) => [r.key, r.value]));
+  if (token && !Object.keys(headers).some((k) => k.toLowerCase() === "authorization")) headers["Authorization"] = "Bearer " + token;
   const opts = { method, headers };
   const raw = $("#bodyText").value.trim();
 
@@ -236,7 +246,12 @@ $("#reqForm").addEventListener("submit", async (e) => {
     $("#time").textContent = `${ms} ms`;
     $("#size").textContent = `${new Blob([text]).size} B`;
     let pretty;
-    try { pretty = highlight(JSON.stringify(JSON.parse(text), null, 2)); } catch { pretty = esc(text || "(empty body)"); }
+    try {
+      const json = JSON.parse(text);
+      if (json && json.data && json.data.token) setToken(json.data.token);
+      pretty = highlight(JSON.stringify(json, null, 2));
+    } catch { pretty = esc(text || "(empty body)"); }
+    if (url.startsWith("/api/auth/logout") && res.ok) setToken(null);
     $("#out").innerHTML = pretty;
     $("#outHeaders").textContent = [...res.headers].map(([k, v]) => `${k}: ${v}`).join("\n");
   } catch (err) {

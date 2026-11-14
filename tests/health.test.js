@@ -1,23 +1,17 @@
 const request = require("supertest");
-const { startTestDb } = require("./helpers/testDb");
-const { buildContainer } = require("../container");
-const createApp = require("../app");
+const { startTestApp } = require("./helpers/testApp");
 
 describe("GET /api/health", () => {
-    let mongoServer;
-    let container;
     let app;
+    let container;
+    let stop;
 
     beforeAll(async () => {
-        mongoServer = await startTestDb();
-        container = buildContainer();
-        await container.database.connect();
-        app = createApp(container);
+        ({ app, container, stop } = await startTestApp());
     });
 
     afterAll(async () => {
-        await container.database.disconnect();
-        await mongoServer.stop();
+        await stop();
     });
 
     it("reports the database as connected", async () => {

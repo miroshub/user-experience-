@@ -9,11 +9,15 @@
     "dev": "node --watch server.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "seed": "node scripts/seed.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "express": "^5.3.0",
-    "mongoose": "^9.12.1"
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.12.1",
+    "multer": "^2.5.0"
   },
   "repository": {
     "type": "git",

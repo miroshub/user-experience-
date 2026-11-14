@@ -10,8 +10,10 @@ export default defineConfig({
         testTimeout: 20000,
         coverage: {
             provider: "v8",
-            reporter: ["text", "html"]
-            // the 80% threshold on logic files is added once the first rule classes exist
+            reporter: ["text", "html"],
+            // NFR-10: the logic files must stay at 80% or more, or `npm run coverage` fails
+            include: ["domain/**/*.js", "services/**/*.js", "security/**/*.js"],
+            thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 }
         }
     }
 });
