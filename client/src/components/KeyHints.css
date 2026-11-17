@@ -1,0 +1,31 @@
+.key-hints {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.key-hints__label {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.key-hints__key {
+  padding: 4px 8px;
+  background: var(--bg-sunken);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+/* Phones have no arrow keys */
+@media (max-width: 767px) {
+  .key-hints {
+    display: none;
+  }
+}

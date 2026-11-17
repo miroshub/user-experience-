@@ -4,18 +4,30 @@
   --bg-surface: #ffffff;
   --bg-sunken: #eeebe3;
   --border-default: #e2ddd2;
+  --border-strong: #c9c3b5;
 
   --brand-primary: #0b5d45;
   --brand-tint: #e2efe8;
 
   --text-primary: #14201b;
   --text-secondary: #4a5a53;
+  --text-muted: #5f6b65;
   --text-on-brand: #ffffff;
   --text-error: #b42318;
+
+  --status-danger: #b42318;
+  --status-pending: #8a5207;
+  --status-pending-bar: #b86e0a;
+  --status-info: #1b3f7a;
+  --status-info-tint: #e4ecf8;
+  --status-success: #1e7a4c;
+  --status-success-tint: #e1f2e8;
+  --overlay: rgba(20, 32, 27, 0.55);
 
   --radius-control: 10px;
   --radius-card: 12px;
   --radius-panel: 14px;
+  --radius-stack: 16px;
   --radius-pill: 999px;
 
   --font-sans: 'IBM Plex Sans', system-ui, sans-serif;

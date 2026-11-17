@@ -1,0 +1,32 @@
+.segmented {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  background: var(--bg-sunken);
+  border-radius: 12px;
+}
+
+.segmented__option {
+  padding: 10px 16px;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.segmented--wide .segmented__option {
+  padding: 10px 20px;
+}
+
+/* Selected = white + darker, heavier text, not colour alone */
+.segmented__option--on {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-weight: 500;
+}

@@ -1,0 +1,209 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-canvas);
+}
+
+.app-layout__main {
+  flex: 1 0 0;
+  min-width: 0;
+  padding: 32px 40px;
+}
+
+/* ---- Sidebar (Figma 240 wide) ---- */
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+  width: 240px;
+  height: 100vh;
+  padding: 28px 16px 24px;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
+}
+
+.sidebar__logo {
+  margin-bottom: 28px;
+  color: var(--brand-primary);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.5px;
+}
+
+.sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 0 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Figma "Nav item": active = tint + brand text + heavier weight, not colour alone */
+.nav-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background: var(--bg-canvas);
+}
+
+.nav-item.active {
+  background: var(--brand-tint);
+  color: var(--brand-primary);
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.nav-item__label {
+  flex: 1 0 0;
+}
+
+.nav-item__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  background: var(--status-danger);
+  border-radius: var(--radius-pill);
+  color: var(--text-on-brand);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.6px;
+}
+
+.sidebar__user {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 8px;
+  background: var(--bg-canvas);
+  border-radius: var(--radius-control);
+}
+
+.sidebar__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.sidebar__avatar--seeker,
+.sidebar__avatar--admin {
+  background: var(--brand-tint);
+  border-radius: var(--radius-pill);
+  color: var(--brand-primary);
+}
+
+.sidebar__avatar--company {
+  background: var(--text-primary);
+  border-radius: 8px;
+  color: var(--text-on-brand);
+}
+
+.sidebar__who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.sidebar__name {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar__role {
+  color: var(--text-secondary);
+}
+
+/* Figma note: under 768px the sidebar becomes 4 bottom tabs */
+@media (max-width: 767px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .app-layout__main {
+    padding: 16px 16px 96px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    width: auto;
+    height: auto;
+    padding: 6px 8px;
+    border-top: 1px solid var(--border-default);
+    border-right: 0;
+  }
+
+  .sidebar__logo,
+  .sidebar__user {
+    display: none;
+  }
+
+  .sidebar__list {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .sidebar__list li {
+    flex: 1 0 0;
+  }
+
+  .nav-item {
+    position: relative;
+    flex-direction: column;
+    gap: 2px;
+    height: auto;
+    padding: 6px 4px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .nav-item.active {
+    line-height: 16px;
+  }
+
+  .nav-item__label {
+    flex: none;
+  }
+
+  .nav-item__badge {
+    position: absolute;
+    top: 2px;
+    left: calc(50% + 6px);
+  }
+}

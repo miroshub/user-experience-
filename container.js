@@ -17,6 +17,8 @@ const UserService = require("./services/UserService");
 const FileService = require("./services/FileService");
 const JobService = require("./services/JobService");
 const SwipeService = require("./services/SwipeService");
+const SeekerSwipeHandler = require("./services/swipe/SeekerSwipeHandler");
+const CompanySwipeHandler = require("./services/swipe/CompanySwipeHandler");
 const FeedService = require("./services/FeedService");
 const MatchService = require("./services/MatchService");
 const HealthController = require("./controllers/HealthController");
@@ -60,7 +62,14 @@ function buildContainer() {
     const userService = new UserService(userRepository, fileRepository);
     const fileService = new FileService(fileRepository);
     const jobService = new JobService(jobRepository, fileRepository);
-    const swipeService = new SwipeService(swipeRepository, matchRepository, jobRepository, userRepository, spamChecker);
+    // Open/Closed: one handler per role that can swipe. Admins are not here, so they cannot swipe.
+    // Seekers can say Interested to 50 jobs a day; the 51st is refused. Skips are not counted.
+    const DAILY_INTERESTED_LIMIT = 50;
+    const swipeHandlers = {
+        seeker: new SeekerSwipeHandler(swipeRepository, spamChecker, DAILY_INTERESTED_LIMIT),
+        company: new CompanySwipeHandler(userRepository)
+    };
+    const swipeService = new SwipeService(swipeRepository, matchRepository, jobRepository, swipeHandlers);
     const feedService = new FeedService(jobRepository, swipeRepository, userRepository);
     const matchService = new MatchService(matchRepository, jobRepository, userRepository);
 

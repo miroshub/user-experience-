@@ -1,0 +1,111 @@
+/* The white side cards on H2 and H9 (Figma: 320 wide, 20px padding, 14px corners) */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  padding: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-panel);
+}
+
+.panel--tight {
+  gap: 10px;
+}
+
+.panel--stats {
+  gap: 8px;
+}
+
+.panel__head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.panel__heading {
+  flex: 1 0 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.panel__head--icon {
+  gap: 8px;
+}
+
+.panel__link {
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  text-decoration: none;
+}
+
+.panel__link:hover {
+  text-decoration: underline;
+}
+
+.panel__text {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.panel__text--strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.overline {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.match-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.match-row__title {
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-row__job {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.match-row__with {
+  color: var(--text-secondary);
+}
+
+.match-row__label {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.match-row__label--brand {
+  color: var(--brand-primary);
+}
+
+.match-row__label--pending {
+  color: var(--status-pending);
+}
+
+.match-row__label--muted {
+  color: var(--text-secondary);
+}

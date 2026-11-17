@@ -10,4 +10,11 @@ export default defineConfig({
       '/api': 'http://localhost:3000',
     },
   },
+  // Client tests: a fake browser (jsdom) + React Testing Library
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test/setup.js',
+    css: false,
+  },
 })

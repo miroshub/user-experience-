@@ -1,0 +1,161 @@
+/* Figma H3: the dialog sits in the middle of the area right of the 240px sidebar */
+.match-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 16px 16px 256px;
+  background: var(--overlay);
+}
+
+.match-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 520px;
+  max-width: 100%;
+  padding: 48px 48px 40px;
+  background: var(--brand-primary);
+  border-radius: 20px;
+  color: var(--text-on-brand);
+  text-align: center;
+}
+
+.match-dialog__overline {
+  color: var(--brand-tint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.6px;
+}
+
+.match-dialog__title {
+  margin-top: 8px;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 46px;
+  letter-spacing: -1px;
+}
+
+.match-dialog__faces {
+  display: flex;
+  align-items: center;
+  margin-top: 28px;
+}
+
+.match-dialog__face {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border: 4px solid var(--brand-primary);
+}
+
+.match-dialog__face:first-child {
+  margin-right: -16px;
+}
+
+.match-dialog__face--round {
+  background: var(--brand-tint);
+  border-radius: var(--radius-pill);
+  color: var(--brand-primary);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.5px;
+}
+
+.match-dialog__face--square {
+  background: var(--text-primary);
+  border-radius: 19px;
+  color: var(--text-on-brand);
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
+.match-dialog__text {
+  width: 380px;
+  max-width: 100%;
+  margin-top: 24px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.match-dialog__note {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: left;
+}
+
+.match-dialog__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.match-dialog__button {
+  width: 200px;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: var(--radius-control);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.match-dialog__button--outline {
+  background: transparent;
+  border: 1.5px solid var(--brand-tint);
+  color: var(--text-on-brand);
+}
+
+.match-dialog__button--white {
+  background: var(--bg-surface);
+  border: 0;
+  color: var(--brand-primary);
+}
+
+/* White focus ring, because the green one would vanish on the green dialog */
+.match-dialog :focus-visible {
+  outline-color: var(--text-on-brand);
+}
+
+@media (max-width: 767px) {
+  .match-overlay {
+    padding: 16px;
+  }
+
+  .match-dialog {
+    padding: 32px 20px 24px;
+  }
+
+  .match-dialog__title {
+    font-size: 32px;
+    line-height: 38px;
+  }
+
+  .match-dialog__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .match-dialog__button {
+    width: 100%;
+  }
+}

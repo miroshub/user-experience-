@@ -1,0 +1,12 @@
+.icon {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.icon img {
+  position: absolute;
+  display: block;
+  max-width: none;
+}

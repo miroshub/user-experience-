@@ -1,14 +1,39 @@
 .chip {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   height: 32px;
   padding: 0 12px;
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-pill);
   color: var(--text-primary);
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 500;
   line-height: 18px;
   white-space: nowrap;
+}
+
+.chip--selected {
+  background: var(--brand-tint);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+.chip--missing {
+  border-color: var(--border-strong);
+  border-style: dashed;
+  color: var(--text-secondary);
+}
+
+.chip--button {
+  cursor: pointer;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }

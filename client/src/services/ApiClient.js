@@ -23,14 +23,16 @@ export class ApiClient {
     const headers = {}
     const token = this.getToken()
     if (token) headers.Authorization = `Bearer ${token}`
-    if (body !== undefined) headers['Content-Type'] = 'application/json'
+    // A file upload (FormData) sets its own Content-Type; everything else is JSON
+    const isFile = body instanceof FormData
+    if (body !== undefined && !isFile) headers['Content-Type'] = 'application/json'
 
     let response
     try {
       response = await fetch(url, {
         method,
         headers,
-        body: body === undefined ? undefined : JSON.stringify(body),
+        body: body === undefined || isFile ? body : JSON.stringify(body),
       })
     } catch {
       throw new Error('Cannot reach the server. Is it running?')
@@ -41,6 +43,7 @@ export class ApiClient {
     if (!response.ok) {
       const error = new Error(json.message || 'Something went wrong')
       error.status = response.status
+      error.code = json.code // e.g. "VERIFY_REQUIRED" or "DAILY_LIMIT"
       throw error
     }
     return json.data

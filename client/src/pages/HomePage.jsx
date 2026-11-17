@@ -3,7 +3,7 @@ import { Button } from '../components/Button'
 import { useAuth } from '../context/AuthContext'
 import './HomePage.css'
 
-// Placeholder after log-in. Phase 2 replaces it with H2 Swipe jobs / H9 Company swipes.
+// Placeholder for admins only. Seekers and companies go to /swipe; the admin dashboard comes in Phase 5.
 export function HomePage() {
   const { user, logOut } = useAuth()
   const navigate = useNavigate()
