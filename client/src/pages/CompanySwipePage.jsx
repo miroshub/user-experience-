@@ -129,7 +129,7 @@ export function CompanySwipePage() {
     try {
       const result = await swipeApi.swipe({ jobId, seekerId: top.id, interested })
       if (result.match) {
-        setMatchWith(top)
+        setMatchWith({ ...top, matchId: result.match.id })
         loadMatches()
       }
     } catch (error) {
@@ -285,7 +285,7 @@ export function CompanySwipePage() {
           them={{ name: shortName(matchWith.fullName), shape: 'round' }}
           jobTitle={job?.title || 'this job'}
           onKeepSwiping={() => setMatchWith(null)}
-          onSayHi={() => navigate('/matches')}
+          onSayHi={() => navigate(`/matches/${matchWith.matchId}`)}
         />
       )}
     </AppLayout>

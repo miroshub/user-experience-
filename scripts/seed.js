@@ -4,6 +4,8 @@ const UserFactory = require("../domain/UserFactory");
 const { UserModel } = require("../models/UserModel");
 const JobModel = require("../models/JobModel");
 const SwipeModel = require("../models/SwipeModel");
+const MatchModel = require("../models/MatchModel");
+const MessageModel = require("../models/MessageModel");
 
 const DEMO_PASSWORD = "Password123!";
 
@@ -65,6 +67,35 @@ async function seedJobs() {
     console.log("  Nile Tech is already interested in Salma for Junior Frontend Developer");
 }
 
+// Demo for FR-28: Salma and Delta Bank matched 8 days ago, Salma wrote 6 days ago, Delta never answered.
+// H4 shows "Waiting on them · 6 days", and the next 09:00 job sends the nudge.
+async function seedQuietMatch() {
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const delta = await UserModel.findOne({ email: "jobs@deltabank.test" });
+    const salma = await UserModel.findOne({ email: "salma@wuzzufny.test" });
+    const job = await JobModel.findOne({ company: delta._id, title: "React Developer" });
+    if (await MatchModel.exists({ seeker: salma._id, job: job._id })) {
+        console.log("  skip  Salma + Delta Bank match (already there)");
+        return;
+    }
+    const matchedAt = new Date(Date.now() - 8 * DAY_MS);
+    const wroteAt = new Date(Date.now() - 6 * DAY_MS);
+    for (const swipedBy of ["seeker", "company"]) {
+        await SwipeModel.updateOne(
+            { swipedBy, seeker: salma._id, job: job._id },
+            { $setOnInsert: { isInterested: true, swipedAt: matchedAt } },
+            { upsert: true }
+        );
+    }
+    const match = await MatchModel.create({
+        seeker: salma._id, job: job._id, company: delta._id, status: "chatting",
+        matchedAt, lastActivity: wroteAt, lastActor: "seeker",
+        stepDates: { matched: matchedAt, chatting: wroteAt }
+    });
+    await MessageModel.create({ match: match._id, sender: salma._id.toString(), text: "Hi! I'd love to hear more about the team.", sentAt: wroteAt });
+    console.log("  Salma and Delta Bank matched; Delta has not replied for 6 days");
+}
+
 // NFR-09: 1,000 fake seekers, inserted in one go so it takes seconds, not minutes
 async function seedBulk(container) {
     const hash = await container.passwordHasher.hash(DEMO_PASSWORD);
@@ -94,6 +125,7 @@ async function main() {
     console.log("Seeding demo accounts (password for all: " + DEMO_PASSWORD + ")");
     await seedPeople(container);
     await seedJobs();
+    await seedQuietMatch();
     if (process.argv.includes("--bulk")) await seedBulk(container);
 
     await container.database.disconnect();

@@ -9,14 +9,17 @@ try {
     process.exit(1);
 }
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 async function start() {
     const container = buildContainer();
     await container.database.connect();
 
     const app = createApp(container);
-    app.listen(port, () => console.log(`server is live on http://localhost:${port}`));
+    // Express and Socket.io share one port: app.listen returns the HTTP server the socket attaches to
+    const httpServer = app.listen(port, () => console.log(`server is live on http://localhost:${port}`));
+    container.socketServer.start(httpServer);
+    container.scheduler.start();
 }
 
 start().catch(err => {

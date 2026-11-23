@@ -1,7 +1,7 @@
 const express = require("express");
 const { requireRole } = require("../middleware/auth");
 
-function createSwipeRoutes(swipeController, feedController, matchController, auth) {
+function createSwipeRoutes(swipeController, feedController, auth) {
     const router = express.Router();
 
     router.get("/api/feed/jobs", auth, requireRole("seeker"), feedController.jobs);
@@ -9,8 +9,6 @@ function createSwipeRoutes(swipeController, feedController, matchController, aut
 
     router.post("/api/swipes", auth, requireRole("seeker", "company"), swipeController.swipe);
     router.post("/api/swipes/undo", auth, requireRole("seeker"), swipeController.undo);
-
-    router.get("/api/matches", auth, matchController.list);
     return router;
 }
 

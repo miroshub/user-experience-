@@ -30,3 +30,21 @@
   color: var(--text-primary);
   font-weight: 500;
 }
+
+/* H4 "Active / Closed": the pill fills its column and the options share it */
+.segmented--fill {
+  display: flex;
+  width: 100%;
+}
+
+.segmented--fill .segmented__option {
+  flex: 1 0 0;
+}
+
+/* H5 "HOW": an icon in front of the words */
+.segmented__option {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}

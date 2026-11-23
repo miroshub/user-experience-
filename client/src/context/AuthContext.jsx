@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { authApi } from '../services/AuthApi'
+import { liveSocket } from '../services/LiveSocket'
 
 const AuthContext = createContext(null)
 
@@ -16,15 +17,19 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function signUp(details) {
+    liveSocket.disconnect()
     setUser(await authApi.signUp(details))
   }
 
   async function logIn(details) {
+    liveSocket.disconnect()
     setUser(await authApi.logIn(details))
   }
 
   async function logOut() {
     await authApi.logOut()
+    // the live socket belongs to the old login; the next user gets a fresh one
+    liveSocket.disconnect()
     setUser(null)
   }
 

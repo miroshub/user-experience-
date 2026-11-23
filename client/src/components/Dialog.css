@@ -1,0 +1,166 @@
+/* Figma H5: the dialog sits in the middle of the area right of the 240px sidebar (like H3) */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 16px 16px 256px;
+  background: var(--overlay);
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 560px;
+  max-width: 100%;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 32px 32px 28px;
+  background: var(--bg-surface);
+  border-radius: 20px;
+}
+
+.dialog__head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.dialog__titles {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dialog__title {
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.5px;
+}
+
+.dialog__subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.dialog__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+/* One labelled group: "HOW", "DAY", "TIME (CAIRO)" */
+.dialog__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Figma: the "HOW" pill is only as wide as its two options */
+.dialog__group > .segmented {
+  align-self: flex-start;
+}
+
+.dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dialog__label {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.dialog__textarea {
+  width: 100%;
+  height: 84px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22px;
+  resize: vertical;
+}
+
+/* The blue "Omar gets the invite now..." note */
+.dialog__note {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--status-info-tint);
+  border-radius: var(--radius-control);
+  color: var(--status-info);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.dialog__error {
+  color: var(--text-error);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.dialog__footer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.dialog__footer .button {
+  height: 48px;
+}
+
+.dialog__cancel {
+  width: 120px;
+}
+
+.dialog__submit {
+  min-width: 160px;
+}
+
+@media (max-width: 767px) {
+  .dialog-overlay {
+    padding: 16px;
+  }
+
+  .dialog {
+    padding: 24px 20px 20px;
+  }
+
+  .dialog__title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .dialog__footer .button {
+    flex: 1 0 0;
+    width: auto;
+    min-width: 0;
+  }
+}

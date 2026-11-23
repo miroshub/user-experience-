@@ -9,6 +9,7 @@ import { CompanySwipePage } from './pages/CompanySwipePage'
 import { EditJobPage } from './pages/EditJobPage'
 import { JobsRedirect } from './pages/JobsRedirect'
 import { ComingSoonPage } from './pages/ComingSoonPage'
+import { MatchesPage } from './pages/MatchesPage'
 
 // Logged-in users skip the welcome pages; logged-out users cannot open the app pages
 function OnlyLoggedOut({ children }) {
@@ -57,7 +58,8 @@ export default function App() {
           <Route path="/jobs" element={companyOnly(<JobsRedirect />)} />
           <Route path="/jobs/new" element={companyOnly(<EditJobPage />)} />
           <Route path="/jobs/:id/edit" element={companyOnly(<EditJobPage />)} />
-          <Route path="/matches" element={loggedIn(<ComingSoonPage title="Matches and chat" phase={3} />)} />
+          <Route path="/matches" element={loggedIn(<ByRole pages={{ seeker: <MatchesPage />, company: <MatchesPage /> }} />)} />
+          <Route path="/matches/:id" element={loggedIn(<ByRole pages={{ seeker: <MatchesPage />, company: <MatchesPage /> }} />)} />
           <Route path="/cv" element={loggedIn(<ComingSoonPage title="My CV" phase={4} />)} />
           <Route path="/profile" element={loggedIn(<ComingSoonPage title="Profile and Trust centre" phase={5} />)} />
           <Route path="*" element={<Navigate to="/" replace />} />

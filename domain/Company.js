@@ -1,6 +1,7 @@
 const User = require("./User");
 const Job = require("./Job");
 const Swipe = require("./Swipe");
+const Interview = require("./Interview");
 const AppError = require("../errors/AppError");
 
 const SIZES = ["1-10", "11-50", "51-200", "201-1000", "1000+"];
@@ -98,6 +99,39 @@ class Company extends User {
             swipedBy: "company",
             isInterested: choice === true
         });
+    }
+
+    // Class diagram: bookInterview(match, time). The pure part of FR-23: InterviewService saves it.
+    // details: { type: "video" | "in person", note }
+    bookInterview(match, time, details = {}, now = new Date()) {
+        this.#requireOwnOpenMatch(match);
+        const interview = new Interview({
+            matchId: match.getMatchId(),
+            dateTime: time,
+            type: details.type,
+            note: details.note || ""
+        });
+        interview.validateMeeting(now);
+        return interview;
+    }
+
+    // FR-26: a short timed test, stored as an Interview of type "test"
+    sendTest(match, data = {}) {
+        this.#requireOwnOpenMatch(match);
+        const test = new Interview({
+            matchId: match.getMatchId(),
+            type: "test",
+            title: data.title,
+            timeLimit: data.timeLimit,
+            questions: Array.isArray(data.questions) ? data.questions : []
+        });
+        test.validateTest();
+        return test;
+    }
+
+    #requireOwnOpenMatch(match) {
+        if (match.getCompanyId() !== this.getUserId()) throw new AppError("Match not found", 404);
+        match.requireOpen();
     }
 
     applyProfileChanges(changes) {

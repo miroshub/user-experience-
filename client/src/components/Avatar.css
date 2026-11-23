@@ -1,0 +1,53 @@
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+/* Companies: solid square tiles with white letters (H4 "NB", "KL", "MP") */
+.avatar--square {
+  border-radius: 9px;
+  color: var(--text-on-brand);
+}
+
+.avatar--square.avatar--ink {
+  background: var(--text-primary);
+}
+
+.avatar--square.avatar--info {
+  background: var(--status-info);
+}
+
+.avatar--square.avatar--pending {
+  background: var(--status-pending);
+}
+
+.avatar--square.avatar--brand {
+  background: var(--brand-primary);
+}
+
+/* People: round, light tint with coloured letters (H5 "OM", "LK", "YH") */
+.avatar--round {
+  border-radius: var(--radius-pill);
+}
+
+.avatar--round.avatar--ink,
+.avatar--round.avatar--info {
+  background: var(--status-info-tint);
+  color: var(--status-info);
+}
+
+.avatar--round.avatar--pending {
+  background: var(--status-pending-tint);
+  color: var(--status-pending);
+}
+
+.avatar--round.avatar--brand {
+  background: var(--brand-tint);
+  color: var(--brand-primary);
+}

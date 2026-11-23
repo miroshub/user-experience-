@@ -7,14 +7,16 @@ class SwipeService {
     #matchRepository;
     #jobRepository;
     #handlers;
+    #notifier;
 
     // handlers: { role: SwipeHandler }. A new kind of user that can swipe is one more entry
     // in container.js; this class does not change (Open/Closed).
-    constructor(swipeRepository, matchRepository, jobRepository, handlers) {
+    constructor(swipeRepository, matchRepository, jobRepository, handlers, notifier) {
         this.#swipeRepository = swipeRepository;
         this.#matchRepository = matchRepository;
         this.#jobRepository = jobRepository;
         this.#handlers = handlers;
+        this.#notifier = notifier;
     }
 
     // body: { jobId, interested } from a seeker, or { jobId, seekerId, interested } from a company
@@ -45,6 +47,8 @@ class SwipeService {
                 companyId: job.getCompanyId(),
                 matchedAt: now
             }));
+            // the other side may be online: their match list updates straight away
+            this.#notifier.toMatch(match, "match:new", { matchId: match.getMatchId() });
         }
         return { swipe: saved, match, job };
     }

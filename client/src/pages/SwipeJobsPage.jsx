@@ -90,7 +90,7 @@ export function SwipeJobsPage() {
       const result = await swipeApi.swipe({ jobId: card.id, interested })
       swiped.current.push(card)
       if (result.match) {
-        setMatchCard(card)
+        setMatchCard({ ...card, matchId: result.match.id })
         loadMatches()
       }
       if (rest.length < REFILL_BELOW) loadCards(filters, false)
@@ -231,7 +231,7 @@ export function SwipeJobsPage() {
           them={{ name: matchCard.company?.name || 'the company', shape: 'square' }}
           jobTitle={matchCard.title}
           onKeepSwiping={() => setMatchCard(null)}
-          onSayHi={() => navigate('/matches')}
+          onSayHi={() => navigate(`/matches/${matchCard.matchId}`)}
         />
       )}
     </AppLayout>

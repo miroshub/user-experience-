@@ -4,6 +4,12 @@ const FileRepository = require("./repositories/FileRepository");
 const JobRepository = require("./repositories/JobRepository");
 const SwipeRepository = require("./repositories/SwipeRepository");
 const MatchRepository = require("./repositories/MatchRepository");
+const MessageRepository = require("./repositories/MessageRepository");
+const InterviewRepository = require("./repositories/InterviewRepository");
+const SocketNotifier = require("./realtime/SocketNotifier");
+const SocketServer = require("./realtime/SocketServer");
+const Scheduler = require("./realtime/Scheduler");
+const cron = require("node-cron");
 const PasswordHasher = require("./security/PasswordHasher");
 const TokenService = require("./security/TokenService");
 const FlagChecker = require("./rules/FlagChecker");
@@ -21,6 +27,10 @@ const SeekerSwipeHandler = require("./services/swipe/SeekerSwipeHandler");
 const CompanySwipeHandler = require("./services/swipe/CompanySwipeHandler");
 const FeedService = require("./services/FeedService");
 const MatchService = require("./services/MatchService");
+const MatchGuard = require("./services/MatchGuard");
+const ChatService = require("./services/ChatService");
+const InterviewService = require("./services/InterviewService");
+const JitsiMeet = require("./services/video/JitsiMeet");
 const HealthController = require("./controllers/HealthController");
 const AuthController = require("./controllers/AuthController");
 const UserController = require("./controllers/UserController");
@@ -29,6 +39,8 @@ const JobController = require("./controllers/JobController");
 const SwipeController = require("./controllers/SwipeController");
 const FeedController = require("./controllers/FeedController");
 const MatchController = require("./controllers/MatchController");
+const ChatController = require("./controllers/ChatController");
+const InterviewController = require("./controllers/InterviewController");
 const { createAuthMiddleware } = require("./middleware/auth");
 
 // Dependency Inversion: this is the only file that creates concrete classes.
@@ -42,6 +54,11 @@ function buildContainer() {
     const jobRepository = new JobRepository();
     const swipeRepository = new SwipeRepository();
     const matchRepository = new MatchRepository();
+    const messageRepository = new MessageRepository();
+    const interviewRepository = new InterviewRepository();
+
+    // live updates: silent until server.js attaches Socket.io, so tests and scripts need no socket
+    const notifier = new SocketNotifier();
 
     // security
     const passwordHasher = new PasswordHasher(Number(process.env.BCRYPT_ROUNDS) || 10);
@@ -69,9 +86,15 @@ function buildContainer() {
         seeker: new SeekerSwipeHandler(swipeRepository, spamChecker, DAILY_INTERESTED_LIMIT),
         company: new CompanySwipeHandler(userRepository)
     };
-    const swipeService = new SwipeService(swipeRepository, matchRepository, jobRepository, swipeHandlers);
+    const swipeService = new SwipeService(swipeRepository, matchRepository, jobRepository, swipeHandlers, notifier);
     const feedService = new FeedService(jobRepository, swipeRepository, userRepository);
-    const matchService = new MatchService(matchRepository, jobRepository, userRepository);
+
+    // Phase 3: chat, interviews, status bar. FR-25 video calls go through Jitsi Meet.
+    const matchGuard = new MatchGuard(matchRepository);
+    const videoCalls = new JitsiMeet(process.env.JWT_SECRET);
+    const chatService = new ChatService(messageRepository, matchRepository, matchGuard, videoCalls, notifier);
+    const interviewService = new InterviewService(interviewRepository, matchRepository, matchGuard, chatService);
+    const matchService = new MatchService(matchRepository, jobRepository, userRepository, interviewRepository, matchGuard, chatService);
 
     // controllers (HTTP only)
     return {
@@ -86,7 +109,15 @@ function buildContainer() {
         jobController: new JobController(jobService),
         swipeController: new SwipeController(swipeService),
         feedController: new FeedController(feedService),
-        matchController: new MatchController(matchService)
+        matchController: new MatchController(matchService),
+        chatController: new ChatController(chatService),
+        interviewController: new InterviewController(interviewService),
+        // used by server.js only: the live socket and the timed jobs
+        socketServer: new SocketServer(tokenService, userRepository, matchRepository, notifier),
+        scheduler: new Scheduler(cron, matchService, interviewService),
+        // used by tests to run the timed jobs on demand
+        matchService,
+        interviewService
     };
 }
 

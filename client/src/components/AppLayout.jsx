@@ -23,13 +23,15 @@ const NAV = {
 
 const ROLE_TEXT = { seeker: 'Job seeker', company: 'Company', admin: 'Admin' }
 
-// Only swipe and jobs have a coloured "on" icon in Figma; the others stay grey
+// Swipe, jobs and matches have a green "on" icon in Figma; My CV and Profile stay grey for now
 function iconName(icon, active) {
   if (icon === 'swipe' || icon === 'jobs') return `${icon}-${active ? 'on' : 'off'}`
+  if (icon === 'matches' && active) return 'matches-on'
   return icon
 }
 
-export function AppLayout({ newMatches = 0, children }) {
+// flush: no padding, for pages whose columns run edge to edge (H4 Matches)
+export function AppLayout({ newMatches = 0, flush = false, children }) {
   const { user } = useAuth()
   const items = NAV[user.role] || []
   const name = displayName(user)
@@ -67,7 +69,7 @@ export function AppLayout({ newMatches = 0, children }) {
           </span>
         </div>
       </nav>
-      <main className="app-layout__main">{children}</main>
+      <main className={`app-layout__main${flush ? ' app-layout__main--flush' : ''}`}>{children}</main>
     </div>
   )
 }
