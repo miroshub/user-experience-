@@ -1,6 +1,7 @@
 import { barStatus, dayText, dayTimeText, nextMeeting, placeText, salaryText } from '../services/format'
 import { Button } from './Button'
 import { Icon } from './Icon'
+import { ReviewBox } from './ReviewBox'
 import { StatusBar } from './StatusBar'
 
 const STEPS = [
@@ -11,7 +12,8 @@ const STEPS = [
   { key: 'hired', label: 'Hired' },
 ]
 
-// H4 right column: the job, the 5 progress steps with dates (FR-27), and closing with a reason (FR-29)
+// H4 right column: the job, the 5 progress steps with dates (FR-27), reviews (FR-38 to FR-41)
+// and closing with a reason (FR-29)
 export function MatchDetails({ match, names, onClose, onMoveStatus, busy, open }) {
   const side = match.mySide
   const job = match.job
@@ -62,6 +64,9 @@ export function MatchDetails({ match, names, onClose, onMoveStatus, busy, open }
           {nextStep === 'offer' ? 'Move to Offer →' : 'Mark as Hired →'}
         </Button>
       )}
+
+      <hr className="match-details__line" />
+      <ReviewBox matchId={match.id} side={side} names={names} status={match.status} />
 
       <div className="match-details__grow" />
       {closed ? (

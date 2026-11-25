@@ -29,6 +29,10 @@ export class AuthApi {
     }
   }
 
+  forgetToken() {
+    api.setToken(null)
+  }
+
   // Returns the logged-in user, or null when there is no valid token
   async currentUser() {
     if (!api.getToken()) return null

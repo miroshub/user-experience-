@@ -59,10 +59,37 @@ class UserRepository {
         return doc ? this.#toDomain(doc) : null;
     }
 
+    // Admin "Users" tab: by name, company name or email. The text is escaped, never run as a pattern.
+    async search(text, limit) {
+        const filter = { accountState: { $ne: "deleted" }, role: { $ne: "admin" } };
+        if (text) {
+            const pattern = new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+            filter.$or = [{ fullName: pattern }, { email: pattern }, { companyName: pattern }];
+        }
+        const docs = await UserModel.find(filter).sort({ createdAt: -1 }).limit(limit);
+        return docs.map(doc => this.#toDomain(doc));
+    }
+
+    // FR-05: asking for the password again before deleting an account
+    async findPasswordHash(id) {
+        const doc = await UserModel.findById(id, { passwordHash: 1 });
+        return doc ? doc.passwordHash : null;
+    }
+
+    // FR-05: the account stays as "Deleted user"; contact details and files are removed
+    async anonymise(user, unusableHash) {
+        const Model = modelsByRole[user.getRole()];
+        await Model.updateOne({ _id: user.getUserId() }, {
+            $set: { ...this.#toDocument(user), passwordHash: unusableHash, idDocumentId: null },
+            $unset: { email: "", phone: "" }
+        });
+    }
+
     #toDocument(user) {
         const doc = {
             fullName: user.getFullName(),
             isVerified: user.getIsVerified(),
+            verifiedAt: user.getVerifiedAt(),
             accountState: user.getAccountState(),
             ...user.getProfileFields()
         };

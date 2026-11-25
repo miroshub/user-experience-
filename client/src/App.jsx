@@ -3,15 +3,16 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { WelcomePage } from './pages/WelcomePage'
 import { SignUpPage } from './pages/SignUpPage'
 import { LoginPage } from './pages/LoginPage'
-import { HomePage } from './pages/HomePage'
 import { SwipeJobsPage } from './pages/SwipeJobsPage'
 import { CompanySwipePage } from './pages/CompanySwipePage'
 import { EditJobPage } from './pages/EditJobPage'
 import { JobsRedirect } from './pages/JobsRedirect'
-import { ComingSoonPage } from './pages/ComingSoonPage'
 import { MatchesPage } from './pages/MatchesPage'
 import { MyCvPage } from './pages/MyCvPage'
 import { AskPage } from './pages/AskPage'
+import { ProfilePage } from './pages/ProfilePage'
+import { DataPage } from './pages/DataPage'
+import { AdminPage } from './pages/AdminPage'
 
 // Logged-in users skip the welcome pages; logged-out users cannot open the app pages
 function OnlyLoggedOut({ children }) {
@@ -32,10 +33,10 @@ function ByRole({ pages }) {
   return pages[user.role] || <Navigate to="/home" replace />
 }
 
-// Seekers and companies start on the swipe page; admins keep the placeholder until their dashboard
+// Seekers and companies start on the swipe page; admins on their dashboard (FR-33)
 function Home() {
   const { user } = useAuth()
-  return user.role === 'admin' ? <HomePage /> : <Navigate to="/swipe" replace />
+  return <Navigate to={user.role === 'admin' ? '/admin' : '/swipe'} replace />
 }
 
 function loggedIn(element) {
@@ -44,6 +45,8 @@ function loggedIn(element) {
 
 const companyOnly = (page) => loggedIn(<ByRole pages={{ company: page }} />)
 const seekerOnly = (page) => loggedIn(<ByRole pages={{ seeker: page }} />)
+const memberOnly = (page) => loggedIn(<ByRole pages={{ seeker: page, company: page }} />)
+const adminOnly = (page) => loggedIn(<ByRole pages={{ admin: page }} />)
 
 export default function App() {
   return (
@@ -65,7 +68,10 @@ export default function App() {
           <Route path="/matches" element={loggedIn(<ByRole pages={{ seeker: <MatchesPage />, company: <MatchesPage /> }} />)} />
           <Route path="/matches/:id" element={loggedIn(<ByRole pages={{ seeker: <MatchesPage />, company: <MatchesPage /> }} />)} />
           <Route path="/cv" element={seekerOnly(<MyCvPage />)} />
-          <Route path="/profile" element={loggedIn(<ComingSoonPage title="Profile and Trust centre" phase={5} />)} />
+          <Route path="/profile" element={memberOnly(<ProfilePage />)} />
+          <Route path="/profile/data" element={memberOnly(<DataPage />)} />
+          <Route path="/admin" element={adminOnly(<AdminPage />)} />
+          <Route path="/admin/:tab" element={adminOnly(<AdminPage />)} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

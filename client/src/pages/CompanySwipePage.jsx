@@ -8,6 +8,7 @@ import { Icon } from '../components/Icon'
 import { KeyHints } from '../components/KeyHints'
 import { MatchDialog } from '../components/MatchDialog'
 import { SegmentedControl } from '../components/SegmentedControl'
+import { RatingTag } from '../components/Stars'
 import { useAuth } from '../context/AuthContext'
 import { useSwipeKeys } from '../hooks/useSwipeKeys'
 import { displayName, initials, shortMoney, shortName, workModeText } from '../services/format'
@@ -43,6 +44,7 @@ function CandidateCard({ card, flagged }) {
           </h2>
           {card.headline && <p className="candidate-card__line">{card.headline}</p>}
           {card.city && <p className="candidate-card__line">{card.city}</p>}
+          <RatingTag rating={card.rating} />
         </div>
       </div>
 

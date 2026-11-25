@@ -33,8 +33,20 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
+  // After the profile changes on the server, so the sidebar shows the new name straight away
+  function replaceUser(updated) {
+    setUser(updated)
+  }
+
+  // After "Delete my account": the token is useless now, so forget it without calling the server
+  function forget() {
+    authApi.forgetToken()
+    liveSocket.disconnect()
+    setUser(null)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, checking, signUp, logIn, logOut }}>
+    <AuthContext.Provider value={{ user, checking, signUp, logIn, logOut, replaceUser, forget }}>
       {children}
     </AuthContext.Provider>
   )

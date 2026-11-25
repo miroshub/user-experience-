@@ -1,0 +1,78 @@
+@import './Dialog.css';
+
+/* Reviews in the H4 "About this match" column (same type sizes as the column) */
+.review-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.review-box__text {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-canvas);
+  border-radius: var(--radius-card);
+}
+
+.review__label {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.review__comment {
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.review__reply {
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  border-left: 3px solid var(--brand-primary);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.review__status {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.review__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.review__actions .button--ghost,
+.review__dispute {
+  height: auto;
+  padding: 4px 0;
+}
+
+.review__actions .button--ghost + .button--ghost {
+  margin-left: 12px;
+}
+
+.review__dispute {
+  align-self: flex-start;
+}
+
+.review__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

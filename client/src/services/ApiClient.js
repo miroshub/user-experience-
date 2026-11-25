@@ -76,6 +76,10 @@ export class ApiClient {
   patch(url, body) {
     return this.request('PATCH', url, body)
   }
+
+  delete(url, body) {
+    return this.request('DELETE', url, body)
+  }
 }
 
 export const api = new ApiClient()

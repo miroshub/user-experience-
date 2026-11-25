@@ -7,8 +7,11 @@ function userToJson(user) {
         phone: user.getPhone(),
         role: user.getRole(),
         isVerified: user.getIsVerified(),
+        verifiedAt: user.getVerifiedAt(),
         accountState: user.getAccountState(),
-        ...user.getProfileFields()
+        ...user.getProfileFields(),
+        // FR-33: the admin dashboard shows only these tabs
+        ...(user.getRole() === "admin" ? { tabs: user.getTabs() } : {})
     };
 }
 

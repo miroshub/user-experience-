@@ -170,6 +170,13 @@ class Interview {
         this.#status = "done";
     }
 
+    // FR-38: a review can be left once an interview has a result. A test has one when it is done;
+    // a meeting has no score, so a confirmed meeting counts once its time has passed.
+    hasHappened(now = new Date()) {
+        if (this.isTest()) return this.#result !== null;
+        return this.#status === "confirmed" && this.#dateTime !== null && this.#dateTime.getTime() <= now.getTime();
+    }
+
     #requireMeeting() {
         if (this.isTest()) throw new AppError("This is a test, not a meeting", 400);
     }

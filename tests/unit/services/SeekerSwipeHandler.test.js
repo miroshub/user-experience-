@@ -6,16 +6,18 @@ const LIMIT = 50;
 const now = new Date("2026-11-15T12:00:00");
 
 // Fakes stand in for the database and the spam checker (Dependency Inversion)
-function makeHandler(interestedEarlierToday) {
+function makeHandler(interestedEarlierToday, flagged = false) {
     const spamCalls = [];
+    const raised = [];
+    const flagService = { raise: async (...args) => raised.push(args) };
     const swipeRepository = { countInterestedSince: async () => interestedEarlierToday };
     const spamChecker = {
         evaluate: (user, data) => {
             spamCalls.push(data);
-            return { flagged: false, reasons: [] };
+            return flagged ? { flagged: true, reasons: ["A", "B"] } : { flagged: false, reasons: [] };
         }
     };
-    return { handler: new SeekerSwipeHandler(swipeRepository, spamChecker, LIMIT), spamCalls };
+    return { handler: new SeekerSwipeHandler(swipeRepository, spamChecker, LIMIT, flagService), spamCalls, raised };
 }
 
 const seeker = new JobSeeker({ userId: "s1", fullName: "Salma", email: "s@x.co", isVerified: true });
@@ -43,6 +45,19 @@ describe("SeekerSwipeHandler daily limit", () => {
         const swipe = await handler.makeSwipe(seeker, job, { interested: false }, now);
         expect(swipe.getIsInterested()).toBe(false);
         expect(spamCalls).toHaveLength(0);
+    });
+
+    it("puts a flagged seeker on the moderator flag list (FR-34)", async () => {
+        const { handler, raised } = makeHandler(0, true);
+        const swipe = await handler.makeSwipe(seeker, job, { interested: true }, now);
+        expect(swipe.getIsSpam()).toBe(true);
+        expect(raised).toEqual([["s1", "spam", ["A", "B"], now]]);
+    });
+
+    it("does not flag a clean swipe", async () => {
+        const { handler, raised } = makeHandler(0);
+        await handler.makeSwipe(seeker, job, { interested: true }, now);
+        expect(raised).toHaveLength(0);
     });
 
     it("tells SwipeService that a company swipe completes the match", () => {

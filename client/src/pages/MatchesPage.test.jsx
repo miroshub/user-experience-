@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MatchesPage } from './MatchesPage'
 import { matchApi } from '../services/MatchApi'
+import { reviewApi } from '../services/ReviewApi'
 
 let mockUser
 vi.mock('../context/AuthContext', () => ({ useAuth: () => ({ user: mockUser }) }))
@@ -12,6 +13,10 @@ vi.mock('../services/MatchApi', () => ({
     list: vi.fn(), get: vi.fn(), messages: vi.fn(), send: vi.fn(), startCall: vi.fn(), slots: vi.fn(),
     book: vi.fn(), accept: vi.fn(), askNewTime: vi.fn(), reschedule: vi.fn(), moveStatus: vi.fn(), close: vi.fn(),
   },
+}))
+vi.mock('../services/ReviewApi', async (original) => ({
+  ...(await original()),
+  reviewApi: { forMatch: vi.fn(), submit: vi.fn(), reply: vi.fn(), dispute: vi.fn() },
 }))
 vi.mock('../services/LiveSocket', () => ({
   liveSocket: { on: vi.fn(() => () => {}), joinMatch: vi.fn(), leaveMatch: vi.fn() },
@@ -54,6 +59,7 @@ describe('H4 Matches + chat', () => {
       { id: 'x1', sender: 'c1', kind: 'text', text: 'Hi Salma!', sentAt: '2026-11-16T10:00:00Z' },
     ])
     matchApi.slots.mockResolvedValue([SLOT, '2026-11-22T11:00:00.000Z'])
+    reviewApi.forMatch.mockResolvedValue({ canReview: false, mine: null, theirs: null, theyReviewed: false })
   })
 
   it('shows the match list, the chat and the progress steps with words', async () => {
@@ -107,6 +113,7 @@ describe('H5 Book an interview (company)', () => {
     matchApi.get.mockResolvedValue(aMatch('company'))
     matchApi.messages.mockResolvedValue([])
     matchApi.slots.mockResolvedValue([SLOT, '2026-11-22T11:00:00.000Z'])
+    reviewApi.forMatch.mockResolvedValue({ canReview: false, mine: null, theirs: null, theyReviewed: false })
   })
 
   it('FR-23: picks how, a day and a free Cairo time, then sends the invite', async () => {

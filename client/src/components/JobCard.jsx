@@ -1,6 +1,7 @@
 import { initials, placeText, salaryText } from '../services/format'
 import { Chip } from './Chip'
 import { Icon } from './Icon'
+import { RatingTag } from './Stars'
 
 // H2 top card (FR-12): company, "% fit", title, pay, place, "why it fits you" chips, description
 export function JobCard({ card }) {
@@ -29,6 +30,7 @@ export function JobCard({ card }) {
             )}
           </p>
           {company?.location && <p className="job-card__sub">{company.location}</p>}
+          <RatingTag rating={company?.rating} />
         </div>
         {typeof card.fit === 'number' && <p className="job-card__fit">{card.fit}% fit</p>}
       </div>

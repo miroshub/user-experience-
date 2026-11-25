@@ -13,12 +13,15 @@ class SeekerSwipeHandler extends SwipeHandler {
     #swipeRepository;
     #spamChecker;
     #dailyInterestedLimit;
+    #flagService;
 
-    constructor(swipeRepository, spamChecker, dailyInterestedLimit) {
+    // flagService: FR-34, a flagged swipe also puts the seeker on the moderator flag list
+    constructor(swipeRepository, spamChecker, dailyInterestedLimit, flagService) {
         super();
         this.#swipeRepository = swipeRepository;
         this.#spamChecker = spamChecker;
         this.#dailyInterestedLimit = dailyInterestedLimit;
+        this.#flagService = flagService;
     }
 
     get otherSide() {
@@ -39,15 +42,16 @@ class SeekerSwipeHandler extends SwipeHandler {
         }
 
         const swipe = user.swipeOnJob(job, true);
-        this.#flagIfSpam(user, swipe, now, earlierToday + 1);
+        await this.#flagIfSpam(user, swipe, now, earlierToday + 1);
         return swipe;
     }
 
     // FR-18: 2 or more rules hit = "Check later" for the company
-    #flagIfSpam(user, swipe, now, interestedToday) {
+    async #flagIfSpam(user, swipe, now, interestedToday) {
         const result = this.#spamChecker.evaluate(user, { now, interestedToday });
         swipe.setIsSpam(result.flagged);
         swipe.setSpamReasons(result.reasons);
+        if (result.flagged) await this.#flagService.raise(user.getUserId(), "spam", result.reasons, now);
     }
 }
 

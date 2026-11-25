@@ -56,6 +56,16 @@ class Company extends User {
     getLogoId() { return this.#logoId; }
     setLogoId(value) { this.#logoId = value; }
 
+    // FR-05: part of anonymise() in User
+    clearProfile() {
+        this.#companyName = "";
+        this.#industry = "";
+        this.#location = "";
+        this.#size = "";
+        this.#about = "";
+        this.#logoId = null;
+    }
+
     getProfileFields() {
         return {
             companyName: this.#companyName,

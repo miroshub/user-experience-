@@ -7,7 +7,11 @@ const userSchema = new mongoose.Schema({
     phone: { type: String, trim: true },
     passwordHash: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
-    accountState: { type: String, enum: ["active", "suspended"], default: "active" },
+    verifiedAt: { type: Date, default: null },
+    accountState: { type: String, enum: ["active", "suspended", "deleted"], default: "active" },
+    // FR-36: who suspended the account, and when
+    suspendedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    suspendedAt: { type: Date, default: null },
     idDocumentId: { type: mongoose.Schema.Types.ObjectId, default: null }
 }, { discriminatorKey: "role", timestamps: true });
 

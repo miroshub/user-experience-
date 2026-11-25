@@ -8,6 +8,11 @@ const MessageRepository = require("./repositories/MessageRepository");
 const InterviewRepository = require("./repositories/InterviewRepository");
 const CvRepository = require("./repositories/CvRepository");
 const AIChatRepository = require("./repositories/AIChatRepository");
+const ReviewRepository = require("./repositories/ReviewRepository");
+const WarningRepository = require("./repositories/WarningRepository");
+const SupportTicketRepository = require("./repositories/SupportTicketRepository");
+const FlagRepository = require("./repositories/FlagRepository");
+const AccountDataRepository = require("./repositories/AccountDataRepository");
 const SocketNotifier = require("./realtime/SocketNotifier");
 const SocketServer = require("./realtime/SocketServer");
 const Scheduler = require("./realtime/Scheduler");
@@ -19,6 +24,8 @@ const NewAccountRule = require("./rules/spam/NewAccountRule");
 const NotVerifiedRule = require("./rules/spam/NotVerifiedRule");
 const MassApplyRule = require("./rules/spam/MassApplyRule");
 const EmptyProfileRule = require("./rules/spam/EmptyProfileRule");
+const SeriousTagsRule = require("./rules/review/SeriousTagsRule");
+const LowAverageRule = require("./rules/review/LowAverageRule");
 const CvAdvisor = require("./rules/CvAdvisor");
 const MissingSkillsRule = require("./rules/cv/MissingSkillsRule");
 const SummaryRule = require("./rules/cv/SummaryRule");
@@ -40,6 +47,11 @@ const InterviewService = require("./services/InterviewService");
 const JitsiMeet = require("./services/video/JitsiMeet");
 const CvService = require("./services/CvService");
 const AssistantService = require("./services/AssistantService");
+const FlagService = require("./services/FlagService");
+const ReviewService = require("./services/ReviewService");
+const TrustService = require("./services/TrustService");
+const AdminService = require("./services/AdminService");
+const DataService = require("./services/DataService");
 const PdfExporter = require("./services/export/PdfExporter");
 const MockModel = require("./services/ai/MockModel");
 const GeminiFlash = require("./services/ai/GeminiFlash");
@@ -58,6 +70,9 @@ const ChatController = require("./controllers/ChatController");
 const InterviewController = require("./controllers/InterviewController");
 const CvController = require("./controllers/CvController");
 const AssistantController = require("./controllers/AssistantController");
+const TrustController = require("./controllers/TrustController");
+const ReviewController = require("./controllers/ReviewController");
+const AdminController = require("./controllers/AdminController");
 const { createAuthMiddleware } = require("./middleware/auth");
 
 // FR-19: AI_MODEL in .env picks the provider (Strategy). Each entry needs its key; mock needs none.
@@ -95,6 +110,11 @@ function buildContainer() {
     const cvRepository = new CvRepository();
     const aiModel = buildAIModel();
     const aiChatRepository = new AIChatRepository(aiModel);
+    const reviewRepository = new ReviewRepository();
+    const warningRepository = new WarningRepository();
+    const ticketRepository = new SupportTicketRepository();
+    const flagRepository = new FlagRepository();
+    const accountDataRepository = new AccountDataRepository(database);
 
     // live updates: silent until server.js attaches Socket.io, so tests and scripts need no socket
     const notifier = new SocketNotifier();
@@ -112,6 +132,14 @@ function buildContainer() {
         new EmptyProfileRule()
     ], 2);
 
+    // FR-42: one of these is enough (minHits = 1). Same FlagChecker class as spam (Open/Closed).
+    const reviewFlagChecker = new FlagChecker([
+        new SeriousTagsRule(3, 30),
+        new LowAverageRule(2, 5)
+    ], 1);
+    // FR-34: spam and review flags go to one moderator list
+    const flagService = new FlagService(flagRepository);
+
     // services (business rules)
     const healthService = new HealthService(database);
     const authService = new AuthService(userRepository, passwordHasher, tokenService);
@@ -122,11 +150,11 @@ function buildContainer() {
     // Seekers can say Interested to 50 jobs a day; the 51st is refused. Skips are not counted.
     const DAILY_INTERESTED_LIMIT = 50;
     const swipeHandlers = {
-        seeker: new SeekerSwipeHandler(swipeRepository, spamChecker, DAILY_INTERESTED_LIMIT),
+        seeker: new SeekerSwipeHandler(swipeRepository, spamChecker, DAILY_INTERESTED_LIMIT, flagService),
         company: new CompanySwipeHandler(userRepository)
     };
     const swipeService = new SwipeService(swipeRepository, matchRepository, jobRepository, swipeHandlers, notifier);
-    const feedService = new FeedService(jobRepository, swipeRepository, userRepository);
+    const feedService = new FeedService(jobRepository, swipeRepository, userRepository, reviewRepository);
 
     // Phase 3: chat, interviews, status bar. FR-25 video calls go through Jitsi Meet.
     const matchGuard = new MatchGuard(matchRepository);
@@ -146,6 +174,12 @@ function buildContainer() {
     const cvService = new CvService(cvRepository, userRepository, jobRepository, swipeRepository, fileRepository, cvAdvisor, new PdfExporter());
     const assistantService = new AssistantService(aiChatRepository, jobRepository, swipeRepository, userRepository);
 
+    // Phase 5: reviews (FR-38 to FR-43), Trust centre (FR-05 to FR-07), admin (FR-33 to FR-37)
+    const reviewService = new ReviewService(reviewRepository, interviewRepository, userRepository, matchGuard, reviewFlagChecker, flagService, notifier);
+    const trustService = new TrustService(warningRepository, ticketRepository);
+    const adminService = new AdminService(userRepository, flagRepository, warningRepository, ticketRepository, reviewRepository, notifier);
+    const dataService = new DataService(accountDataRepository, userRepository, matchRepository, passwordHasher, chatService);
+
     // controllers (HTTP only)
     return {
         database,
@@ -164,12 +198,16 @@ function buildContainer() {
         interviewController: new InterviewController(interviewService),
         cvController: new CvController(cvService),
         assistantController: new AssistantController(assistantService),
+        trustController: new TrustController(trustService, dataService),
+        reviewController: new ReviewController(reviewService),
+        adminController: new AdminController(adminService),
         // used by server.js only: the live socket and the timed jobs
         socketServer: new SocketServer(tokenService, userRepository, matchRepository, notifier),
-        scheduler: new Scheduler(cron, matchService, interviewService),
+        scheduler: new Scheduler(cron, matchService, interviewService, reviewService),
         // used by tests to run the timed jobs on demand
         matchService,
-        interviewService
+        interviewService,
+        reviewService
     };
 }
 

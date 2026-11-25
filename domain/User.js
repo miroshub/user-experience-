@@ -1,4 +1,5 @@
 const AppError = require("../errors/AppError");
+const SupportTicket = require("./SupportTicket");
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^\+?[0-9]{8,15}$/;
@@ -18,6 +19,8 @@ class User {
     #isVerified;
     #accountState;
     #createdAt;
+    // H8: "Verified once on 12 Oct. You won't be asked again."
+    #verifiedAt;
 
     constructor(data) {
         this.#userId = data.userId || null;
@@ -28,6 +31,15 @@ class User {
         this.#isVerified = data.isVerified === true;
         this.#accountState = data.accountState || "active";
         this.#createdAt = data.createdAt ? new Date(data.createdAt) : null;
+        this.#verifiedAt = data.verifiedAt ? new Date(data.verifiedAt) : null;
+    }
+
+    getVerifiedAt() { return this.#verifiedAt; }
+
+    // FR-03 / FR-04: verified once, with the date it happened
+    markVerified(now = new Date()) {
+        this.#isVerified = true;
+        this.#verifiedAt = now;
     }
 
     // not in the class diagram: the spam rule "account less than 1 day old" (FR-18) needs it
@@ -69,10 +81,32 @@ class User {
     // The pure part of log-in: AuthService has already checked the password,
     // here the account itself must be allowed in
     logIn() {
+        if (this.#accountState === "deleted") throw new AppError("Please log in", 401);
         if (this.#accountState === "suspended") {
             throw new AppError("This account is suspended", 403);
         }
     }
+
+    // FR-06: every kind of user can write to support (class diagram: contactSupport())
+    contactSupport(topic, message, now = new Date()) {
+        const ticket = new SupportTicket({ userId: this.#userId, topic, message, createdAt: now });
+        ticket.validate();
+        return ticket;
+    }
+
+    // FR-05: the account stays only as "Deleted user", so the other side's chats still make sense.
+    // Contact details and profile fields are wiped; subclasses clear their own fields.
+    anonymise() {
+        this.#fullName = "Deleted user";
+        this.#email = null;
+        this.#phone = null;
+        this.#isVerified = false;
+        this.#verifiedAt = null;
+        this.#accountState = "deleted";
+        this.clearProfile();
+    }
+
+    clearProfile() {}
 
     // Tokens are not stored on the server, so logging out only means the client forgets its token
     logOut() {

@@ -28,11 +28,14 @@ class FeedService {
     #jobRepository;
     #swipeRepository;
     #userRepository;
+    #reviewRepository;
 
-    constructor(jobRepository, swipeRepository, userRepository) {
+    // reviewRepository: FR-39, the star rating on each card
+    constructor(jobRepository, swipeRepository, userRepository, reviewRepository) {
         this.#jobRepository = jobRepository;
         this.#swipeRepository = swipeRepository;
         this.#userRepository = userRepository;
+        this.#reviewRepository = reviewRepository;
     }
 
     // FR-12 + FR-15: the next job cards for a seeker
@@ -60,10 +63,14 @@ class FeedService {
         const top = scored.sort(byFit).slice(0, limit);
 
         const companyIds = [...new Set(top.map(item => item.job.getCompanyId()))];
-        const companies = await this.#userRepository.findManyByIds(companyIds);
+        const [companies, ratings] = await Promise.all([
+            this.#userRepository.findManyByIds(companyIds),
+            this.#reviewRepository.ratingsFor(companyIds)
+        ]);
         return top.map(item => ({
             ...item,
-            company: companies.find(c => c.getUserId() === item.job.getCompanyId()) || null
+            company: companies.find(c => c.getUserId() === item.job.getCompanyId()) || null,
+            rating: ratings.get(item.job.getCompanyId()) || null
         }));
     }
 
@@ -90,11 +97,11 @@ class FeedService {
             }))
             .sort(byFit);
 
-        return {
-            job,
-            candidates: scored.filter(item => item.spamReasons.length === 0).slice(0, limit),
-            checkLater: scored.filter(item => item.spamReasons.length > 0).slice(0, limit)
-        };
+        const candidates = scored.filter(item => item.spamReasons.length === 0).slice(0, limit);
+        const checkLater = scored.filter(item => item.spamReasons.length > 0).slice(0, limit);
+        const ratings = await this.#reviewRepository.ratingsFor([...candidates, ...checkLater].map(i => i.seeker.getUserId()));
+        const withRating = item => ({ ...item, rating: ratings.get(item.seeker.getUserId()) || null });
+        return { job, candidates: candidates.map(withRating), checkLater: checkLater.map(withRating) };
     }
 }
 

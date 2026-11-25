@@ -7,6 +7,10 @@ const SwipeModel = require("../models/SwipeModel");
 const MatchModel = require("../models/MatchModel");
 const MessageModel = require("../models/MessageModel");
 const CvModel = require("../models/CvModel");
+const ReviewModel = require("../models/ReviewModel");
+const WarningModel = require("../models/WarningModel");
+const SupportTicketModel = require("../models/SupportTicketModel");
+const FlagModel = require("../models/FlagModel");
 
 const DEMO_PASSWORD = "Password123!";
 
@@ -119,6 +123,62 @@ async function seedCv() {
     console.log("  added a CV for Salma");
 }
 
+// Phase 5 demo, so every admin tab has something in it:
+// - Omar and Nile Tech: a closed match, both reviews visible, Omar's review of Nile disputed (FR-41, FR-43)
+// - Omar: a warning sent 9 days ago, now past its fix-by date, so Suspend is unlocked (FR-36)
+// - Nour: a spam flag (FR-34)
+// - Salma: a support ticket waiting 30 hours, over the 24-hour promise (FR-37)
+async function seedTrust() {
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const ago = days => new Date(Date.now() - days * DAY_MS);
+    const [nile, omar, nour, salma, mona] = await Promise.all([
+        UserModel.findOne({ email: "hr@niletech.test" }),
+        UserModel.findOne({ email: "omar@wuzzufny.test" }),
+        UserModel.findOne({ phone: "+201001112223" }),
+        UserModel.findOne({ email: "salma@wuzzufny.test" }),
+        UserModel.findOne({ email: "moderator@wuzzufny.test" })
+    ]);
+    const job = await JobModel.findOne({ company: nile._id, title: "Node.js Backend Intern" });
+    if (await MatchModel.exists({ seeker: omar._id, job: job._id })) {
+        console.log("  skip  trust demo (already there)");
+        return;
+    }
+
+    for (const swipedBy of ["seeker", "company"]) {
+        await SwipeModel.updateOne(
+            { swipedBy, seeker: omar._id, job: job._id },
+            { $setOnInsert: { isInterested: true, swipedAt: ago(20) } },
+            { upsert: true }
+        );
+    }
+    const match = await MatchModel.create({
+        seeker: omar._id, job: job._id, company: nile._id, status: "closed",
+        matchedAt: ago(20), lastActivity: ago(3), lastActor: "company", closedBy: "company",
+        closeReason: "Looking for more experience",
+        stepDates: { matched: ago(20), chatting: ago(19), interview: ago(10), closed: ago(3) }
+    });
+    await MessageModel.create({ match: match._id, sender: "system", kind: "closed", text: "Nile Tech closed this match. Reason: Looking for more experience", sentAt: ago(3) });
+    await ReviewModel.create({
+        match: match._id, reviewer: nile._id, reviewee: omar._id, stars: 2, tags: ["No-show"],
+        comment: "Missed the first interview without telling us.", status: "visible", createdAt: ago(2)
+    });
+    await ReviewModel.create({
+        match: match._id, reviewer: omar._id, reviewee: nile._id, stars: 1, tags: ["Ghosted"],
+        comment: "They stopped answering after the interview.", reply: "We sent the result by email on the same day.",
+        status: "disputed", createdAt: ago(2)
+    });
+    await WarningModel.create({
+        user: omar._id, admin: mona._id, reason: "Missed two interviews without telling the company",
+        deadline: ago(2), status: "open", createdAt: ago(9)
+    });
+    await FlagModel.create({ user: nour._id, source: "spam", reasons: ["Not verified", "Account less than 1 day old"], createdAt: ago(1) });
+    await SupportTicketModel.create({
+        user: salma._id, topic: "Verification",
+        message: "I uploaded my ID but I want to check it was received. Thanks!", createdAt: new Date(Date.now() - 30 * 60 * 60 * 1000)
+    });
+    console.log("  added the trust demo: a disputed review, an expired warning, a spam flag and a support ticket");
+}
+
 // NFR-09: 1,000 fake seekers, inserted in one go so it takes seconds, not minutes
 async function seedBulk(container) {
     const hash = await container.passwordHasher.hash(DEMO_PASSWORD);
@@ -150,6 +210,7 @@ async function main() {
     await seedJobs();
     await seedQuietMatch();
     await seedCv();
+    await seedTrust();
     if (process.argv.includes("--bulk")) await seedBulk(container);
 
     await container.database.disconnect();

@@ -40,6 +40,13 @@ class JobSeeker extends User {
         this.#skills = clean;
     }
 
+    // FR-05: part of anonymise() in User
+    clearProfile() {
+        this.#headline = "";
+        this.#city = "";
+        this.#skills = [];
+    }
+
     getProfileFields() {
         return { headline: this.#headline, city: this.#city, skills: this.getSkills() };
     }

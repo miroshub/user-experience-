@@ -1,0 +1,65 @@
+/* Review stars. Amber like the "pending" accents, grey for empty ones. */
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 1;
+}
+
+.stars--md {
+  font-size: 16px;
+}
+
+.stars--lg {
+  font-size: 20px;
+}
+
+.stars__on {
+  color: var(--status-pending-bar);
+}
+
+.stars__off {
+  color: var(--border-strong);
+}
+
+.rating-tag {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.rating-tag__count {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.star-picker {
+  display: flex;
+  gap: 4px;
+}
+
+.star-picker__star {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-control);
+  color: var(--border-strong);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.star-picker__star--on {
+  background: var(--status-pending-tint);
+  border-color: var(--status-pending-bar);
+  color: var(--status-pending-bar);
+}
+
+.star-picker__star:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}

@@ -8,6 +8,8 @@ const createSwipeRoutes = require("./routes/swipeRoutes");
 const createMatchRoutes = require("./routes/matchRoutes");
 const createCvRoutes = require("./routes/cvRoutes");
 const createAiRoutes = require("./routes/aiRoutes");
+const createTrustRoutes = require("./routes/trustRoutes");
+const createAdminRoutes = require("./routes/adminRoutes");
 const errorHandler = require("./middleware/errorHandler");
 
 // Builds the Express app without starting it, so tests can use it with Supertest
@@ -28,6 +30,8 @@ function createApp(container) {
 
     app.use(createCvRoutes(container.cvController, container.auth));
     app.use(createAiRoutes(container.assistantController, container.auth));
+    app.use(createTrustRoutes(container.trustController, container.reviewController, container.auth));
+    app.use(createAdminRoutes(container.adminController, container.auth));
 
     app.use((req, res) => res.status(404).json({ message: "Not found" }));
     app.use(errorHandler);

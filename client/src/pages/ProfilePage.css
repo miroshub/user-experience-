@@ -1,0 +1,398 @@
+@import '../components/Panel.css';
+
+/* H8 · Profile + Trust centre (Figma 8:740) */
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-page__loading,
+.profile-page__error {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.profile-page__error {
+  color: var(--text-error);
+}
+
+.profile-page .notice-area:empty {
+  display: none;
+}
+
+.profile-page .notice {
+  align-self: flex-start;
+  padding: 12px 14px;
+  background: var(--status-success-tint);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* Header: 72px avatar, name, subtitle, verified line, Edit profile */
+.profile-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
+
+.profile-head__avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  background: var(--brand-tint);
+  border-radius: var(--radius-pill);
+  color: var(--brand-primary);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
+.profile-head__text {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  min-width: 220px;
+}
+
+.profile-head__name {
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.5px;
+}
+
+.profile-head__sub {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.profile-head__verified,
+.profile-head__unverified {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--brand-tint);
+  border-radius: 8px;
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.profile-head__unverified {
+  background: var(--status-pending-tint);
+  color: var(--status-pending);
+}
+
+/* Two columns: Trust centre 600 wide, the rest fills; one column on small screens */
+.profile-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.profile-col {
+  display: flex;
+  flex: 1 1 320px;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.profile-col--trust {
+  flex: 0 1 600px;
+}
+
+.trust-card,
+.looking-card,
+.notify-card {
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-panel);
+  list-style: none;
+}
+
+/* Account health banner */
+.trust-health {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.trust-health--good {
+  background: var(--status-success-tint);
+}
+
+.trust-health--warning {
+  background: var(--status-pending-tint);
+}
+
+.trust-health__badge {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--status-success);
+  border-radius: 9px;
+}
+
+.trust-health--warning .trust-health__badge {
+  background: var(--bg-surface);
+}
+
+.trust-health__text {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.trust-health__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.trust-health__body {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* Rows: 36px sunken icon tile, title + caption, chevron */
+.trust-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--border-default);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+
+.trust-row--action {
+  cursor: pointer;
+}
+
+.trust-row--action:hover {
+  background: var(--bg-canvas);
+}
+
+.trust-row--action:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: -2px;
+}
+
+.trust-row__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-sunken);
+  border-radius: 9px;
+}
+
+.trust-row__text {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.trust-row__title {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.trust-row__sub {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.trust-row__chevron--open {
+  transform: rotate(90deg);
+}
+
+/* Warning history and support messages */
+.trust-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trust-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-default);
+}
+
+.trust-card.trust-list .trust-list__item:first-child {
+  border-top: 0;
+}
+
+.trust-list__title {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.trust-list__meta {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.trust-list__body {
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.trust-list__reply {
+  padding: 10px 12px;
+  background: var(--brand-tint);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* What you're looking for */
+.looking-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+}
+
+.looking-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.looking-row__label {
+  flex-shrink: 0;
+  width: 80px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.looking-row__empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.looking-card__edit {
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+/* Notifications with on/off switches (the Figma toggle drawings) */
+.notify-card {
+  margin: 0;
+  padding: 4px 20px;
+}
+
+.notify-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid var(--border-default);
+}
+
+.notify-row:first-child {
+  border-top: 0;
+}
+
+.notify-row__label {
+  flex: 1 0 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.notify-row__state {
+  width: 22px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.switch {
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  padding: 0;
+  background: url('../assets/icons/toggle-off.svg') no-repeat center / 44px 26px;
+  border: 0;
+  border-radius: 13px;
+  cursor: pointer;
+}
+
+.switch--on {
+  background-image: url('../assets/icons/toggle-on.svg');
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Log out: danger red text with its icon, no box */
+.logout {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 12px 0 0;
+  background: none;
+  border: 0;
+  color: var(--status-danger);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  cursor: pointer;
+}

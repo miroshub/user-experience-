@@ -32,6 +32,13 @@ import chatSmall from '../assets/icons/chat-small.svg'
 import cvOn from '../assets/icons/cv-on.svg'
 import bulb from '../assets/icons/bulb.svg'
 import chat from '../assets/icons/chat.svg'
+import profileOn from '../assets/icons/profile-on.svg'
+import check18 from '../assets/icons/check-18.svg'
+import chatRow from '../assets/icons/chat-row.svg'
+import data from '../assets/icons/data.svg'
+import card from '../assets/icons/card.svg'
+import logout from '../assets/icons/logout.svg'
+import clockRow from '../assets/icons/clock-row.svg'
 import './Icon.css'
 
 // Figma line icons. Each SVG keeps its own size; x and y place it inside the icon box
@@ -73,6 +80,14 @@ const ICONS = {
   'cv-on': { src: cvOn, box: 24, x: 5, y: 2 },
   bulb: { src: bulb, box: 18, x: 3.47, y: 1.25 },
   chat: { src: chat, box: 20, x: 2.333, y: 3.167 },
+  // H8 Profile + Trust centre
+  'profile-on': { src: profileOn, box: 24, x: 3, y: 3 },
+  'check-18': { src: check18, box: 18, x: 2.75, y: 4.625 },
+  'chat-row': { src: chatRow, box: 18, x: 2, y: 2.75 },
+  data: { src: data, box: 18, x: 2.75, y: 1.25 },
+  card: { src: card, box: 18, x: 1.25, y: 3.5 },
+  logout: { src: logout, box: 18, x: 3.5, y: 2 },
+  'clock-row': { src: clockRow, box: 18, x: 1.25, y: 1.25 },
 }
 
 export function Icon({ name, className = '' }) {

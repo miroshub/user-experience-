@@ -37,17 +37,17 @@ function presentJobs(jobs) {
 // FR-12: one card = job + "% fit" + "why it fits you" chips + the company
 function presentJobCards(items) {
     return {
-        data: items.map(({ job, fit, company }) => ({
+        data: items.map(({ job, fit, company, rating = null }) => ({
             ...jobToJson(job),
             fit: fit.percent,
             whyItFits: fit.matched,
             missingSkills: fit.missing,
-            company: companyToCard(company)
+            company: companyToCard(company) && { ...companyToCard(company), rating }
         }))
     };
 }
 
-function candidateToCard({ seeker, fit, spamReasons }) {
+function candidateToCard({ seeker, fit, spamReasons, rating = null }) {
     return {
         id: seeker.getUserId(),
         fullName: seeker.getFullName(),
@@ -55,6 +55,7 @@ function candidateToCard({ seeker, fit, spamReasons }) {
         city: seeker.getCity(),
         skills: seeker.getSkills(),
         isVerified: seeker.getIsVerified(),
+        rating,
         fit: fit.percent,
         whyItFits: fit.matched,
         missingSkills: fit.missing,

@@ -29,7 +29,7 @@ class UserService {
             ownerId: user.getUserId(),
             isPublic: false
         });
-        user.setIsVerified(true);
+        user.markVerified();
         return this.#userRepository.update(user, { idDocumentId: fileId });
     }
 
