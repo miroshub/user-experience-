@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './SkillEditor.css'
 
 // H10 "Skills you want": chips with ×, and "+ Add skill" that turns into a small box
 export function SkillEditor({ skills, onChange }) {

@@ -35,6 +35,50 @@
   cursor: pointer;
 }
 
+/* H2 Ask bar (Figma 6:152): a link to H7 that looks like a search box */
+.ask-bar {
+  display: inline-flex;
+  flex: 0 1 620px;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 22px;
+  text-decoration: none;
+}
+
+.ask-bar span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ask-bar:hover {
+  border-color: var(--border-strong);
+}
+
+/* H2 "CV CHECK" card: 74 / 100 */
+.cv-check__score {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.cv-check__number {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
 .filter-panel {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

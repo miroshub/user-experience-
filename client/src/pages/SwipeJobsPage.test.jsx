@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SwipeJobsPage } from './SwipeJobsPage'
 import { swipeApi } from '../services/SwipeApi'
+import { cvApi } from '../services/CvApi'
 
 // The page gets a fake logged-in seeker and a fake API, so no server is needed
 vi.mock('../context/AuthContext', () => ({
@@ -11,6 +12,10 @@ vi.mock('../context/AuthContext', () => ({
 }))
 vi.mock('../services/SwipeApi', () => ({
   swipeApi: { jobCards: vi.fn(), swipe: vi.fn(), undo: vi.fn(), matches: vi.fn() },
+}))
+
+vi.mock('../services/CvApi', () => ({
+  cvApi: { get: vi.fn() },
 }))
 
 function card(id, title, company) {
@@ -42,6 +47,14 @@ describe('H2 Swipe jobs', () => {
     vi.resetAllMocks()
     swipeApi.jobCards.mockResolvedValue([card('j1', 'Junior Frontend Developer', 'Nile Byte'), card('j2', 'QA Tester', 'Delta Bank')])
     swipeApi.matches.mockResolvedValue([])
+    cvApi.get.mockResolvedValue({ ats: { score: 74, potential: 92, tips: [{}, {}, {}] } })
+  })
+
+  it('links to H7 from the Ask bar and to H6 from the CV check card', async () => {
+    showPage()
+    expect(await screen.findByRole('link', { name: /Ask: “remote React jobs/ })).toHaveAttribute('href', '/swipe/ask')
+    expect(await screen.findByText('3 quick fixes could take you to about 92.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Fix my CV →' })).toHaveAttribute('href', '/cv')
   })
 
   it('shows the top card with its fit, reasons and missing skills', async () => {

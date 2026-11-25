@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AppLayout } from '../components/AppLayout'
 import { Button } from '../components/Button'
 import { Chip } from '../components/Chip'
+import { CvCheckPanel } from '../components/CvCheckPanel'
 import { FilterPanel } from '../components/FilterPanel'
 import { Icon } from '../components/Icon'
 import { JobCard } from '../components/JobCard'
@@ -33,7 +34,7 @@ function noticeFor(error) {
   return { text: error.message }
 }
 
-// H2 Swipe jobs + H3 It's a match (FR-12 to FR-15)
+// H2 Swipe jobs + H3 It's a match (FR-12 to FR-15). The Ask bar opens H7, the CV check card opens H6.
 export function SwipeJobsPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -149,6 +150,10 @@ export function SwipeJobsPage() {
     <AppLayout newMatches={newMatches}>
       <div className="swipe-page">
         <div className="swipe-page__toolbar">
+          <Link className="ask-bar" to="/swipe/ask">
+            <Icon name="chat" />
+            <span>Ask: “remote React jobs, at least 12k”</span>
+          </Link>
           <button
             type="button"
             className="toolbar-button"
@@ -221,6 +226,7 @@ export function SwipeJobsPage() {
 
           <aside className="swipe-page__side">
             <MatchesPanel matches={matches} />
+            <CvCheckPanel />
           </aside>
         </div>
       </div>

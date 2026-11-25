@@ -1,0 +1,33 @@
+/* Chips with x and the dashed "+ Add skill" (H10 Skills you want, H6 Skills) */
+.skill-remove {
+  padding: 0 0 0 2px;
+  background: none;
+  border: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.skill-add,
+.skill-input {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px dashed var(--brand-primary);
+  border-radius: var(--radius-pill);
+  color: var(--brand-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.skill-add {
+  cursor: pointer;
+}
+
+.skill-input {
+  width: 140px;
+  border-style: solid;
+  color: var(--text-primary);
+}

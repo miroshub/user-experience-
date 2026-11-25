@@ -1,0 +1,354 @@
+@import '../components/Panel.css';
+
+/* H7 · Ask (AI helper) (Figma 8:589): a 520-wide chat card on the left, the matching jobs on the right */
+.ask-page {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.ask-chat {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+  width: 520px;
+  height: calc(100vh - 64px);
+  min-height: 560px;
+  padding: 24px 24px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-stack);
+}
+
+.ask-chat__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ask-chat__title {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
+.ask-chat__subtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* The questions and answers; it grows and scrolls, pushing "Try asking" to the bottom */
+.ask-chat__log {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ask-turn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ask-bubble {
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* The seeker: green, the small corner bottom right */
+.ask-bubble--me {
+  align-self: flex-start;
+  max-width: 388px;
+  padding: 10px 14px;
+  background: var(--brand-primary);
+  border-radius: 14px 14px 4px 14px;
+  color: var(--text-on-brand);
+}
+
+/* The assistant: canvas colour, full width, the small corner bottom left */
+.ask-bubble--ai {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  background: var(--bg-canvas);
+  border-radius: 14px 14px 14px 4px;
+  color: var(--text-primary);
+}
+
+.ask-tip {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.ask-tip a {
+  color: var(--brand-primary);
+  font-weight: 500;
+}
+
+.ask-chat__notice:empty {
+  display: none;
+}
+
+.ask-chat__notice .notice {
+  padding: 10px 12px;
+  background: var(--status-info-tint);
+  border-radius: var(--radius-control);
+  color: var(--status-info);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.ask-chat__notice .notice a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.ask-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ask-suggestion {
+  padding: 10px 12px;
+  background: none;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.ask-suggestion:hover {
+  border-color: var(--brand-primary);
+}
+
+.ask-input {
+  display: flex;
+  gap: 8px;
+}
+
+.ask-input__box {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-card);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.ask-input__box::placeholder {
+  color: var(--text-muted);
+}
+
+.ask-input__send {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: var(--brand-primary);
+  border: 0;
+  border-radius: var(--radius-card);
+  cursor: pointer;
+}
+
+.ask-input__send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---- Results ---- */
+.ask-results {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ask-results__head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.ask-results__title {
+  flex: 1 0 0;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
+.ask-results__sort {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.ask-results__empty {
+  padding: 24px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-panel);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.ask-job {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-panel);
+}
+
+.ask-job__summary {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-panel);
+  color: inherit;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ask-job .avatar--square {
+  border-radius: var(--radius-control);
+}
+
+.ask-job__words {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ask-job__title {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.ask-job__where {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.ask-job__pay {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.ask-job__fit {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  background: var(--brand-tint);
+  border-radius: 8px;
+  color: var(--brand-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.ask-job__chevron {
+  transition: transform 0.15s;
+}
+
+.ask-job--open .ask-job__chevron {
+  transform: rotate(90deg);
+}
+
+.ask-job__details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 20px 16px 80px;
+}
+
+.ask-job__description {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.ask-job__actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .ask-page {
+    flex-direction: column;
+  }
+
+  .ask-chat {
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    min-height: 0;
+  }
+
+  .ask-chat__log {
+    flex: none;
+    max-height: 60vh;
+  }
+
+  .ask-results {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .ask-chat {
+    padding: 20px 16px 16px;
+  }
+
+  .ask-job__summary {
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .ask-job__details {
+    padding: 0 16px 16px;
+  }
+}

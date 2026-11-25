@@ -6,6 +6,8 @@ const SwipeRepository = require("./repositories/SwipeRepository");
 const MatchRepository = require("./repositories/MatchRepository");
 const MessageRepository = require("./repositories/MessageRepository");
 const InterviewRepository = require("./repositories/InterviewRepository");
+const CvRepository = require("./repositories/CvRepository");
+const AIChatRepository = require("./repositories/AIChatRepository");
 const SocketNotifier = require("./realtime/SocketNotifier");
 const SocketServer = require("./realtime/SocketServer");
 const Scheduler = require("./realtime/Scheduler");
@@ -17,6 +19,11 @@ const NewAccountRule = require("./rules/spam/NewAccountRule");
 const NotVerifiedRule = require("./rules/spam/NotVerifiedRule");
 const MassApplyRule = require("./rules/spam/MassApplyRule");
 const EmptyProfileRule = require("./rules/spam/EmptyProfileRule");
+const CvAdvisor = require("./rules/CvAdvisor");
+const MissingSkillsRule = require("./rules/cv/MissingSkillsRule");
+const SummaryRule = require("./rules/cv/SummaryRule");
+const MissingDatesRule = require("./rules/cv/MissingDatesRule");
+const MissingSectionsRule = require("./rules/cv/MissingSectionsRule");
 const HealthService = require("./services/HealthService");
 const AuthService = require("./services/AuthService");
 const UserService = require("./services/UserService");
@@ -31,6 +38,14 @@ const MatchGuard = require("./services/MatchGuard");
 const ChatService = require("./services/ChatService");
 const InterviewService = require("./services/InterviewService");
 const JitsiMeet = require("./services/video/JitsiMeet");
+const CvService = require("./services/CvService");
+const AssistantService = require("./services/AssistantService");
+const PdfExporter = require("./services/export/PdfExporter");
+const MockModel = require("./services/ai/MockModel");
+const GeminiFlash = require("./services/ai/GeminiFlash");
+const Haiku = require("./services/ai/Haiku");
+const Sonnet = require("./services/ai/Sonnet");
+const Anthropic = require("@anthropic-ai/sdk");
 const HealthController = require("./controllers/HealthController");
 const AuthController = require("./controllers/AuthController");
 const UserController = require("./controllers/UserController");
@@ -41,7 +56,28 @@ const FeedController = require("./controllers/FeedController");
 const MatchController = require("./controllers/MatchController");
 const ChatController = require("./controllers/ChatController");
 const InterviewController = require("./controllers/InterviewController");
+const CvController = require("./controllers/CvController");
+const AssistantController = require("./controllers/AssistantController");
 const { createAuthMiddleware } = require("./middleware/auth");
+
+// FR-19: AI_MODEL in .env picks the provider (Strategy). Each entry needs its key; mock needs none.
+// A new provider is one new class and one new line here (Open/Closed).
+const AI_MODELS = {
+    mock: () => new MockModel(),
+    gemini: () => process.env.GEMINI_API_KEY &&
+        new GeminiFlash(process.env.GEMINI_API_KEY, process.env.GEMINI_MODEL || "gemini-3-flash-preview", fetch),
+    haiku: () => process.env.ANTHROPIC_API_KEY && new Haiku(new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })),
+    sonnet: () => process.env.ANTHROPIC_API_KEY && new Sonnet(new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }))
+};
+
+function buildAIModel() {
+    const choice = (process.env.AI_MODEL || "mock").trim().toLowerCase();
+    const build = AI_MODELS[choice];
+    const model = build ? build() : null;
+    if (model) return model;
+    console.warn(`AI_MODEL=${choice} is unknown or its API key is missing in .env, so the mock model is used.`);
+    return new MockModel();
+}
 
 // Dependency Inversion: this is the only file that creates concrete classes.
 // Everything else receives what it needs through its constructor.
@@ -56,6 +92,9 @@ function buildContainer() {
     const matchRepository = new MatchRepository();
     const messageRepository = new MessageRepository();
     const interviewRepository = new InterviewRepository();
+    const cvRepository = new CvRepository();
+    const aiModel = buildAIModel();
+    const aiChatRepository = new AIChatRepository(aiModel);
 
     // live updates: silent until server.js attaches Socket.io, so tests and scripts need no socket
     const notifier = new SocketNotifier();
@@ -96,6 +135,17 @@ function buildContainer() {
     const interviewService = new InterviewService(interviewRepository, matchRepository, matchGuard, chatService);
     const matchService = new MatchService(matchRepository, jobRepository, userRepository, interviewRepository, matchGuard, chatService);
 
+    // Phase 4: CV, ATS score (FR-08 to FR-10) and the AI helper (FR-19 to FR-21).
+    // FR-09: up to 5 fixes. A new kind of fix is one more rule in this list.
+    const cvAdvisor = new CvAdvisor([
+        new MissingSkillsRule(2),
+        new SummaryRule(),
+        new MissingDatesRule(),
+        new MissingSectionsRule()
+    ], 5);
+    const cvService = new CvService(cvRepository, userRepository, jobRepository, swipeRepository, fileRepository, cvAdvisor, new PdfExporter());
+    const assistantService = new AssistantService(aiChatRepository, jobRepository, swipeRepository, userRepository);
+
     // controllers (HTTP only)
     return {
         database,
@@ -112,6 +162,8 @@ function buildContainer() {
         matchController: new MatchController(matchService),
         chatController: new ChatController(chatService),
         interviewController: new InterviewController(interviewService),
+        cvController: new CvController(cvService),
+        assistantController: new AssistantController(assistantService),
         // used by server.js only: the live socket and the timed jobs
         socketServer: new SocketServer(tokenService, userRepository, matchRepository, notifier),
         scheduler: new Scheduler(cron, matchService, interviewService),
@@ -121,4 +173,4 @@ function buildContainer() {
     };
 }
 
-module.exports = { buildContainer };
+module.exports = { buildContainer, buildAIModel };

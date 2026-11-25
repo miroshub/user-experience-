@@ -6,6 +6,7 @@ const JobModel = require("../models/JobModel");
 const SwipeModel = require("../models/SwipeModel");
 const MatchModel = require("../models/MatchModel");
 const MessageModel = require("../models/MessageModel");
+const CvModel = require("../models/CvModel");
 
 const DEMO_PASSWORD = "Password123!";
 
@@ -96,6 +97,28 @@ async function seedQuietMatch() {
     console.log("  Salma and Delta Bank matched; Delta has not replied for 6 days");
 }
 
+// H6: Salma's CV, like the Figma frame: a long About me and one role without dates, so the ATS check has fixes to show
+async function seedCv() {
+    const salma = await UserModel.findOne({ email: "salma@wuzzufny.test" });
+    if (await CvModel.exists({ seeker: salma._id })) {
+        console.log("  skip CV for Salma (exists)");
+        return;
+    }
+    await CvModel.create({
+        seeker: salma._id,
+        summary: "Fresh computer science graduate who loves building things people use every day. " +
+            "During university I worked on many group projects, joined hackathons, and taught myself React through online courses and side projects. " +
+            "I enjoy turning designs into clean, fast pages and I care a lot about small details like spacing, loading states and clear error messages. " +
+            "In my free time I help friends with their portfolio sites and I am always learning something new, lately testing and accessibility.",
+        experience: [
+            { title: "Frontend Intern", company: "Koshk Labs (remote)", startDate: "Jul 2026", endDate: "Sep 2026", bullets: ["Rebuilt the sign-up flow in React; drop-offs fell from 38% to 21%"] },
+            { title: "Freelance web projects", company: "", startDate: "", endDate: "", bullets: ["Bus-tracking web app for my faculty, used by 300 students a day"] }
+        ],
+        education: [{ degree: "BSc Computer Science", school: "Cairo University", startYear: "2022", endYear: "2026" }]
+    });
+    console.log("  added a CV for Salma");
+}
+
 // NFR-09: 1,000 fake seekers, inserted in one go so it takes seconds, not minutes
 async function seedBulk(container) {
     const hash = await container.passwordHasher.hash(DEMO_PASSWORD);
@@ -126,6 +149,7 @@ async function main() {
     await seedPeople(container);
     await seedJobs();
     await seedQuietMatch();
+    await seedCv();
     if (process.argv.includes("--bulk")) await seedBulk(container);
 
     await container.database.disconnect();

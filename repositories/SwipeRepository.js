@@ -37,6 +37,12 @@ class SwipeRepository {
         return docs.map(doc => doc.job);
     }
 
+    // "Saved jobs" for the CV check (FR-09): the jobs the seeker said Interested to
+    async findInterestedJobIds(seekerId) {
+        const docs = await SwipeModel.find({ seeker: seekerId, swipedBy: "seeker", isInterested: true }, { job: 1 });
+        return docs.map(doc => doc.job);
+    }
+
     async findSeekerIdsSwipedByCompany(jobId) {
         const docs = await SwipeModel.find({ job: jobId, swipedBy: "company" }, { seeker: 1 });
         return docs.map(doc => doc.seeker);

@@ -59,6 +59,12 @@ class JobSeeker extends User {
         });
     }
 
+    // From the class diagram. Only seekers have the AI helper, so the method lives here, not on User (ISP).
+    askAssistant(chat, text) {
+        if (chat.getSeekerId() !== this.getUserId()) throw new AppError("This is not your chat", 403);
+        return chat.ask(text);
+    }
+
     applyProfileChanges(changes) {
         super.applyProfileChanges(changes);
         if ("headline" in changes) this.setHeadline(changes.headline);

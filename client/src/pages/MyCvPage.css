@@ -1,0 +1,440 @@
+@import '../components/Panel.css';
+
+/* H6 · My CV + ATS check (Figma 8:421) */
+.cv-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cv-page__loading {
+  color: var(--text-secondary);
+}
+
+.cv-page__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.cv-page__titles {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.cv-page__title {
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.5px;
+}
+
+.cv-page__subtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.cv-page .notice-area:empty {
+  display: none;
+}
+
+.cv-page .notice {
+  align-self: flex-start;
+  padding: 12px 14px;
+  background: var(--status-info-tint);
+  border-radius: var(--radius-control);
+  color: var(--status-info);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.cv-page__body {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.cv-page__left {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+  width: 460px;
+}
+
+.cv-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-panel);
+}
+
+/* ---- ATS card ---- */
+.ats-card {
+  gap: 4px;
+  padding: 20px;
+}
+
+.ats-card__top {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding-bottom: 12px;
+}
+
+.ats-ring {
+  position: relative;
+  flex-shrink: 0;
+  width: 112px;
+  height: 112px;
+}
+
+.ats-ring svg {
+  display: block;
+}
+
+.ats-ring__score {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  width: 112px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+  text-align: center;
+}
+
+.ats-ring__out {
+  position: absolute;
+  top: 62px;
+  left: 0;
+  width: 112px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.6px;
+  text-align: center;
+}
+
+.ats-card__words {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ats-card__headline {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+}
+
+.ats-card__potential {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* One fix: "+8", the words, a secondary button. Dividers between rows. */
+.ats-tip {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-default);
+}
+
+.ats-tip__gain {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  background: var(--brand-tint);
+  border-radius: 6px;
+  color: var(--brand-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.ats-tip__text {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.ats-tip .button {
+  flex-shrink: 0;
+}
+
+/* ---- Section rows ---- */
+.cv-sections {
+  padding: 4px 20px;
+}
+
+.cv-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 14px 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cv-row:first-child {
+  border-top: 0;
+}
+
+.cv-row--static {
+  cursor: default;
+}
+
+.cv-row__label {
+  flex: 1 0 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.cv-row__status {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.cv-row__status--warn {
+  color: var(--status-pending);
+}
+
+.cv-row__link {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--brand-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.cv-row__link:hover {
+  text-decoration: underline;
+}
+
+/* ---- Preview: what recruiters see ---- */
+.cv-preview-wrap {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cv-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 40px 48px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+}
+
+.cv-preview__name {
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -0.5px;
+}
+
+.cv-preview__contact,
+.cv-preview__dates,
+.cv-preview__empty {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.cv-preview__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cv-preview__heading {
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-default);
+  color: var(--brand-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.cv-preview__entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cv-preview__row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cv-preview__title {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.cv-preview__text {
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+  white-space: pre-line;
+}
+
+/* Problems are tinted amber and also named in words */
+.cv-preview__flag {
+  padding: 6px 8px;
+  background: var(--status-pending-tint);
+  border-radius: 4px;
+}
+
+.cv-preview__flag--row {
+  padding: 4px 8px;
+}
+
+.cv-preview__warn {
+  color: var(--status-pending);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+/* ---- Section dialog ---- */
+.cv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cv-form__summary {
+  height: 160px;
+}
+
+.cv-form__count {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.cv-form__count--warn {
+  color: var(--status-pending);
+}
+
+.cv-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+}
+
+.cv-form__group legend {
+  padding: 0 6px;
+}
+
+.cv-form__group .text-field__label {
+  color: var(--text-secondary);
+}
+
+.cv-form__group .text-field__input {
+  border-color: var(--border-strong);
+}
+
+.cv-form__pair {
+  display: flex;
+  gap: 12px;
+}
+
+.cv-form__remove {
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--text-error);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.cv-form__add {
+  align-self: flex-start;
+}
+
+@media (max-width: 1100px) {
+  .cv-page__body {
+    flex-direction: column;
+  }
+
+  .cv-page__left {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .cv-preview-wrap {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .cv-preview {
+    padding: 24px 20px;
+  }
+
+  .ats-card__top {
+    gap: 14px;
+  }
+
+  .cv-preview__row {
+    flex-wrap: wrap;
+  }
+}

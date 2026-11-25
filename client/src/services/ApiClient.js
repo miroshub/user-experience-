@@ -53,6 +53,22 @@ export class ApiClient {
     return this.request('GET', url)
   }
 
+  // A file (like the CV PDF) as a Blob, with the login token
+  async getFile(url) {
+    const token = this.getToken()
+    let response
+    try {
+      response = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    } catch {
+      throw new Error('Cannot reach the server. Is it running?')
+    }
+    if (!response.ok) {
+      const json = await response.json().catch(() => ({}))
+      throw new Error(json.message || 'Could not get the file')
+    }
+    return response.blob()
+  }
+
   post(url, body) {
     return this.request('POST', url, body)
   }

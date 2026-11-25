@@ -29,6 +29,9 @@ import personSmall from '../assets/icons/person-small.svg'
 import bellSmall from '../assets/icons/bell-small.svg'
 import clockAmber from '../assets/icons/clock-amber.svg'
 import chatSmall from '../assets/icons/chat-small.svg'
+import cvOn from '../assets/icons/cv-on.svg'
+import bulb from '../assets/icons/bulb.svg'
+import chat from '../assets/icons/chat.svg'
 import './Icon.css'
 
 // Figma line icons. Each SVG keeps its own size; x and y place it inside the icon box
@@ -66,6 +69,10 @@ const ICONS = {
   'bell-small': { src: bellSmall, box: 16, x: 1, y: 0.333 },
   'clock-amber': { src: clockAmber, box: 16, x: 1, y: 1 },
   'chat-small': { src: chatSmall, box: 16, x: 1.667, y: 2.333 },
+  // H6, H7 and the H2 Ask bar
+  'cv-on': { src: cvOn, box: 24, x: 5, y: 2 },
+  bulb: { src: bulb, box: 18, x: 3.47, y: 1.25 },
+  chat: { src: chat, box: 20, x: 2.333, y: 3.167 },
 }
 
 export function Icon({ name, className = '' }) {

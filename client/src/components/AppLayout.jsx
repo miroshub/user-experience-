@@ -23,10 +23,11 @@ const NAV = {
 
 const ROLE_TEXT = { seeker: 'Job seeker', company: 'Company', admin: 'Admin' }
 
-// Swipe, jobs and matches have a green "on" icon in Figma; My CV and Profile stay grey for now
+// Swipe, jobs, matches and My CV have a green "on" icon in Figma; Profile stays grey for now
 function iconName(icon, active) {
   if (icon === 'swipe' || icon === 'jobs') return `${icon}-${active ? 'on' : 'off'}`
   if (icon === 'matches' && active) return 'matches-on'
+  if (icon === 'cv' && active) return 'cv-on'
   return icon
 }
 

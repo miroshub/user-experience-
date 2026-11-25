@@ -9,7 +9,8 @@ try {
     process.exit(1);
 }
 
-const port = process.env.PORT || 3001;
+// 3000 is the port the React proxy (client/vite.config.js) and the README expect
+const port = process.env.PORT || 3000;
 
 async function start() {
     const container = buildContainer();

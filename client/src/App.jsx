@@ -10,6 +10,8 @@ import { EditJobPage } from './pages/EditJobPage'
 import { JobsRedirect } from './pages/JobsRedirect'
 import { ComingSoonPage } from './pages/ComingSoonPage'
 import { MatchesPage } from './pages/MatchesPage'
+import { MyCvPage } from './pages/MyCvPage'
+import { AskPage } from './pages/AskPage'
 
 // Logged-in users skip the welcome pages; logged-out users cannot open the app pages
 function OnlyLoggedOut({ children }) {
@@ -41,6 +43,7 @@ function loggedIn(element) {
 }
 
 const companyOnly = (page) => loggedIn(<ByRole pages={{ company: page }} />)
+const seekerOnly = (page) => loggedIn(<ByRole pages={{ seeker: page }} />)
 
 export default function App() {
   return (
@@ -55,12 +58,13 @@ export default function App() {
             path="/swipe"
             element={loggedIn(<ByRole pages={{ seeker: <SwipeJobsPage />, company: <CompanySwipePage /> }} />)}
           />
+          <Route path="/swipe/ask" element={seekerOnly(<AskPage />)} />
           <Route path="/jobs" element={companyOnly(<JobsRedirect />)} />
           <Route path="/jobs/new" element={companyOnly(<EditJobPage />)} />
           <Route path="/jobs/:id/edit" element={companyOnly(<EditJobPage />)} />
           <Route path="/matches" element={loggedIn(<ByRole pages={{ seeker: <MatchesPage />, company: <MatchesPage /> }} />)} />
           <Route path="/matches/:id" element={loggedIn(<ByRole pages={{ seeker: <MatchesPage />, company: <MatchesPage /> }} />)} />
-          <Route path="/cv" element={loggedIn(<ComingSoonPage title="My CV" phase={4} />)} />
+          <Route path="/cv" element={seekerOnly(<MyCvPage />)} />
           <Route path="/profile" element={loggedIn(<ComingSoonPage title="Profile and Trust centre" phase={5} />)} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
